@@ -1,0 +1,112 @@
+{
+    "id": "nl.regoor.statecontrol",
+    "version": "0.0.1",
+    "compatibility": "0.x || 1.x",
+   	"name": {
+        "en": "State Control"
+    },
+    "author": {
+        "name": "Serge Regoor",
+        "email": "serge@regoor.nl"
+    },
+    "permissions": [],
+	"flow":
+	{
+		"triggers": [
+			{
+				"id": "state_change",
+				"title":
+				{
+					"nl": "State change",
+					"en": "state change"
+				},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "state_group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "room",
+						"type": "autocomplete"
+					},
+					{
+						"name": "state",
+						"type": "autocomplete"
+					}
+				]
+	   		},
+			{
+				"id": "request_action",
+				"title":
+				{
+					"nl": "Action",
+					"en": "Action"
+				},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "state_group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "room",
+						"type": "autocomplete"
+					},
+					{
+						"name": "requested_action",
+						"type": "autocomplete"
+					}
+				]
+	   		}
+	   	],
+		"actions": [
+			{
+	   			"id": "set_state",
+	   			"title":
+	   			{
+	   				"nl": "Set state",
+	   				"en": "Set state"
+	   			},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "state_group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "room",
+						"type": "autocomplete"
+					},
+					{
+						"name": "state",
+						"type": "autocomplete"
+					}
+				]
+			},
+			{
+	   			"id": "perform_action",
+	   			"title":
+	   			{
+	   				"nl": "Action",
+	   				"en": "Action"
+	   			},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "state_group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "room",
+						"type": "autocomplete"
+					},
+					{
+						"name": "action_to_perform",
+						"type": "autocomplete"
+					}
+				]
+			}
+		]
+	}
+}
