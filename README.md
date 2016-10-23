@@ -6,7 +6,9 @@ The goal of the app is to have a more structured method where multiple flows wil
 Sounds abstract, eh? Let me explain by two examples later on in this page, as I have them in my home.
 
 # To-do's
+
 * Infinite loop detection
+* Make translations and explanatory texts
 * Add support to execute multiple follow-up actions when an action is executed
 * Make a setting for actions to specify if they're triggerable and/or performable
 * Add delay settings for actions
