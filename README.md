@@ -15,4 +15,4 @@ See the wiki for detailed documentation.
 | Date          | Comments          |
 | ------------- | -------------     |
 | 2016-10-24    | Initial version.  |
-| 2016-10-23 | First commit, albeit still a work in progress. Not ready for publication or use. |
+
