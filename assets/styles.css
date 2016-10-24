@@ -63,11 +63,11 @@ fieldset legend { font-size:14px !important; color:#333 !important; font-weight:
 .lister[rel-listtype="actions"] .col:nth-child(1) { width:calc(33px - 8px); }
 .lister[rel-listtype="actions"] .col:nth-child(2) { width:calc(33px - 8px); }
 .lister[rel-listtype="actions"] .col:nth-child(3) { width:calc(47px - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.45) - 8px); }
+.lister[rel-listtype="actions"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.4) - 8px); }
 .lister[rel-listtype="actions"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.1) - 8px); }
 .lister[rel-listtype="actions"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.15) - 8px); }
 .lister[rel-listtype="actions"] .col:nth-child(7) { width:calc(((100% - 113px) * 0.15) - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(8) { width:calc(((100% - 113px) * 0.15) - 8px); }
+.lister[rel-listtype="actions"] .col:nth-child(8) { width:calc(((100% - 113px) * 0.2) - 8px); }
 
 .lister[rel-listtype="followUps"] .col:nth-child(1) { width:calc(33px - 8px); }
 .lister[rel-listtype="followUps"] .col:nth-child(2) { width:calc(33px - 8px); }
