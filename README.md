@@ -5,11 +5,6 @@ The goal of the app is to have a more structured method where multiple flows wil
 
 [See the wiki for detailed documentation.](https://github.com/SergeRegoor/nl.regoor.statecontrol/wiki)
 
-# To-do's
-
-* Limit states to certain rooms
-* Infinite loop detection for actions
-
 # Revision history
 
 | Date          | Comments          |
