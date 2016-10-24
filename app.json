@@ -6,7 +6,16 @@
         "nl": "State Control",
         "en": "State Control"
     },
-    "author": {
+   	"description": {
+        "nl": "Maak gebruik van states in je huis om je flows te optimaliseren.",
+        "en": "Keep track of states in your home to optimize your flows."
+    },
+    "category": "tools",
+	"images": {
+		"large": "./assets/images/large.png",
+		"small": "./assets/images/small.png"
+	},
+      "author": {
         "name": "Serge Regoor",
         "email": "serge@regoor.nl"
     },
