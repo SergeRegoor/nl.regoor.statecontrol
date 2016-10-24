@@ -6,9 +6,9 @@ var _formTypes = [
 		filter: null,
 		listType: 'stateGroups',
 		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true }
+			{ property:'description', title:{localText:'edit.stateGroup.description'}, isMandatory:true }
 		],
-		afterSave: function(stateGroup) { initializeTabs(); $('.tabControl').invalidateTabs(); }
+		afterSave: function(stateGroup, formObj) { initializeTabs(); $('.tabControl').invalidateTabs(); }
 	},
 	{
 		type: 'room',
@@ -16,10 +16,16 @@ var _formTypes = [
 		filter: { property:'stateGroupId', compareTo:'parentId' },
 		listType: 'rooms',
 		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true },
-			{ property:'isActive', title:'Actief', propertyType:'boolean', defaultValue:true },
-			{ property:'stateId', title:'State', propertyType:'state', info:'Wanneer je de state handmatig wijzigt, worden eventuele flows getriggered.' }
-		]
+			{ property:'description', title:{localText:'edit.room.description'}, isMandatory:true },
+			{ property:'isActive', title:{localText:'edit.room.isActive'}, propertyType:'boolean', defaultValue:true },
+			{ type:'currentRoomState', title:{localText:'edit.room.currentState'} },
+			{ type:'newRoomState', title:{localText:'edit.room.newState'}, info:{localText:'edit.room.newStateInfo'}, addEmptyItem:true }
+		],
+		afterSave: function(room, formObj) {
+			var newStateId = formObj.find('select#fieldnewRoomState option:selected').val();
+			if ((newStateId != null) && (newStateId.length > 0))
+				setRoomState(room.id, newStateId);
+		}
 	},
 	{
 		type: 'state',
@@ -27,9 +33,9 @@ var _formTypes = [
 		filter: { property:'stateGroupId', compareTo:'parentId' },
 		listType: 'states',
 		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true },
-			{ property:'isActive', title:'Actief', propertyType:'boolean', defaultValue:true },
-			{ property:'isOverruling', title:'Prioriteit', propertyType:'boolean', defaultValue:false, info:'Andere states mogen deze state niet overschrijven, tenzij ze zelf overruling zijn.' }
+			{ property:'description', title:{localText:'edit.state.description'}, isMandatory:true },
+			{ property:'isActive', title:{localText:'edit.state.isActive'}, propertyType:'boolean', defaultValue:true },
+			{ property:'isOverruling', title:{localText:'edit.state.isOverruling'}, propertyType:'boolean', defaultValue:false, info:{localText:'edit.state.isOverrulingInfo'} }
 		]
 	},
 	{
@@ -39,10 +45,10 @@ var _formTypes = [
 		filter: { property:'stateGroupId', compareTo:'parentId' },
 		listType: 'actions',
 		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true },
-			{ property:'isActive', title:'Actief', width:33, propertyType:'boolean', defaultValue:true },
-			{ property:'isTriggerable', title:'Is mee te triggeren', width:33, propertyType:'boolean', defaultValue:true },
-			{ property:'isPerformable', title:'Is uit te voeren', width:33, propertyType:'boolean', defaultValue:true },
+			{ property:'description', title:{localText:'edit.action.description'}, isMandatory:true },
+			{ property:'isActive', title:{localText:'edit.action.isActive'}, width:20, propertyType:'boolean', defaultValue:true },
+			{ property:'isTriggerable', title:{localText:'edit.action.isTriggerable'}, width:40, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isTriggerableInfo'} },
+			{ property:'isPerformable', title:{localText:'edit.action.isPerformable'}, width:40, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isPerformableInfo'} },
 			{ property:'followUps', propertyType:'array' }
 		],
 		controls: [
@@ -55,11 +61,11 @@ var _formTypes = [
 		filter: null,
 		listType: 'followUps',
 		fields: [
-			{ property:'isActive', title:'Actief', width:20, propertyType:'boolean', defaultValue:true },
-			{ property:'doNotCheckOverruling', title:'Prioriteit niet respecteren', width:50, propertyType:'boolean', defaultValue:false },
-			{ property:'delaySeconds', title:'Delay in seconds', width:30, defaultValue:0 },
-			{ property:'stateId', title:'Follow-up state', propertyType:'state' },
-			{ property:'actionId', title:'Follow-up action', propertyType:'action' }
+			{ property:'isActive', title:{localText:'edit.followUp.isActive'}, width:30, propertyType:'boolean', defaultValue:true },
+			{ property:'doNotCheckOverruling', title:{localText:'edit.followUp.doNotCheckOverruling'}, width:70, propertyType:'boolean', defaultValue:false, info:{localText:'edit.followUp.doNotCheckOverrulingInfo'} },
+			{ property:'delaySeconds', title:{localText:'edit.followUp.delaySeconds'}, defaultValue:0, isNumeric:true },
+			{ property:'stateId', title:{localText:'edit.followUp.nextState'}, propertyType:'state' },
+			{ property:'actionId', title:{localText:'edit.followUp.nextAction'}, propertyType:'action', info:{localText:'edit.followUp.nextActionInfo'} }
 		]
 	}
 ];

@@ -3,6 +3,7 @@
     "version": "0.0.1",
     "compatibility": "0.x || 1.x",
    	"name": {
+        "nl": "State Control",
         "en": "State Control"
     },
     "author": {
@@ -14,34 +15,11 @@
 	{
 		"triggers": [
 			{
-				"id": "state_change",
-				"title":
-				{
-					"nl": "State change",
-					"en": "state change"
-				},
-				"fluidArgs": true,
-				"args": [
-					{
-						"name": "state_group",
-						"type": "autocomplete"
-					},
-					{
-						"name": "room",
-						"type": "autocomplete"
-					},
-					{
-						"name": "state",
-						"type": "autocomplete"
-					}
-				]
-	   		},
-			{
 				"id": "request_action",
 				"title":
 				{
-					"nl": "Action",
-					"en": "Action"
+					"nl": "Actie wordt uitgevoerd",
+					"en": "Action is performed"
 				},
 				"fluidArgs": true,
 				"args": [
@@ -58,16 +36,14 @@
 						"type": "autocomplete"
 					}
 				]
-	   		}
-	   	],
-		"actions": [
+	   		},
 			{
-	   			"id": "set_state",
-	   			"title":
-	   			{
-	   				"nl": "Set state",
-	   				"en": "Set state"
-	   			},
+				"id": "state_change",
+				"title":
+				{
+					"nl": "Staat wijziging",
+					"en": "State change"
+				},
 				"fluidArgs": true,
 				"args": [
 					{
@@ -83,13 +59,40 @@
 						"type": "autocomplete"
 					}
 				]
-			},
+	   		}
+	   	],
+		"conditions": [
+			{
+				"id": "state",
+				"title":
+				{
+					"nl": "Staat is !{{actief|niet actief}}",
+					"en": "State is !{{active|not active}}"
+				},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "state_group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "room",
+						"type": "autocomplete"
+					},
+					{
+						"name": "state",
+						"type": "autocomplete"
+					}
+				]
+	   		}
+	   	],
+		"actions": [
 			{
 	   			"id": "perform_action",
 	   			"title":
 	   			{
-	   				"nl": "Action",
-	   				"en": "Action"
+	   				"nl": "Actie uitvoeren",
+	   				"en": "Perform action"
 	   			},
 				"fluidArgs": true,
 				"args": [
@@ -103,6 +106,29 @@
 					},
 					{
 						"name": "action_to_perform",
+						"type": "autocomplete"
+					}
+				]
+			},
+			{
+	   			"id": "set_state",
+	   			"title":
+	   			{
+	   				"nl": "Stel staat in",
+	   				"en": "Set state"
+	   			},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "state_group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "room",
+						"type": "autocomplete"
+					},
+					{
+						"name": "state",
 						"type": "autocomplete"
 					}
 				]

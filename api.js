@@ -4,12 +4,42 @@ var DEBUG = true;
 
 module.exports = [
 	{
+		description:			'Get current states for all rooms',
+		method:					'GET',
+		path:					'/room-states/',
+		fn: function(callback, args) {
+			var result = {
+				successful: false,
+				errorMessage: '',
+				roomStates: []
+			};
+			try {
+				var stateControl = new StateControl();
+				var rooms = stateControl.getRooms();
+				for (var idx = 0; idx < rooms.length; idx++) {
+					var state = stateControl.getRoomState(rooms[idx]);
+					if (state != null) {
+						result.roomStates[result.roomStates.length] = {
+							roomId: rooms[idx].id,
+							stateId: state.id
+						};
+					}
+				}
+				
+				result.successful = true;
+			} catch(exception) {
+				result.errorMessage = exception.message;
+			}
+			callback(null, result);
+		}
+	},
+	{
 		description:			'Set room state',
 		method: 				'POST',
 		path:					'/set-room-state/', // ?stategroupid=&roomid=&stateid=
 		fn: function(callback, args) {
 			var result = {
-				successful: true,
+				successful: false,
 				errorMessage: ''
 			};
 			try {
@@ -32,6 +62,7 @@ module.exports = [
 				if (!room.isActive) throw new Error('Room not active.');
 				if (!state.isActive) throw new Error('State not active.');
 				
+				result.successful = true;
 				Homey.app.setRoomState(stateGroup, room, state, true);
 				
 			} catch(exception) {
@@ -46,7 +77,7 @@ module.exports = [
 		path:					'/perform-action/', // ?stategroupid=&roomid=&actionid=
 		fn: function(callback, args) {
 			var result = {
-				successful: true,
+				successful: false,
 				errorMessage: ''
 			};
 			try {
@@ -69,8 +100,8 @@ module.exports = [
 				if (!room.isActive) throw new Error('Room not active.');
 				if (!action.isActive) throw new Error('Action not active.');
 				
+				result.successful = true;
 				Homey.app.performAction(stateGroup, room, action);
-				
 			} catch(exception) {
 				result.errorMessage = exception.message;
 			}

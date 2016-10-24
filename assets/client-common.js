@@ -1,18 +1,4 @@
 $(document).ready(function(){
-	$('a.newWindow').click(function(e){
-		e.preventDefault();
-		window.open($(this).attr('href'));
-	});
-	
-	$('.copyToClipboard').click(function(e){
-		e.preventDefault();
-		copyToClipboard($($(this).attr('rel-selector')));
-		var valueDescription = $(this).attr('rel-description');
-		if (valueDescription.length > 0)
-			alert(valueDescription + ' ' + __('clipboard_xxxxx_copied'));
-		else
-			alert(__('clipboard_value_copied'));
-	});
 });
 
 $.fn.loadLocalizedTexts = function() {
@@ -21,6 +7,7 @@ $.fn.loadLocalizedTexts = function() {
 			var localizedTextFor = $(this).attr('rel-localized-for');
 			var localizedTextId = $(this).attr('rel-localized');
 			var localizedText = __(localizedTextId);
+			console.log('localizedTextId: ' + localizedText);
 			if ((localizedTextFor != null) && (localizedTextFor.length > 0))
 				$(this).attr(localizedTextFor, localizedText);
 			else if ((localizedText.indexOf('/>') >= 0) || (localizedText.indexOf('</') >= 0))
@@ -35,27 +22,18 @@ $.fn.loadLocalizedTexts = function() {
 	});
 }
 
-function copyToClipboard(obj) {
-	var value = '';
-	if (obj.is('input') || obj.is('textarea') || obj.is('textarea'))
-		value = obj.val();
-	else
-		value = obj.text();
-	
-	var hiddenObj = $('<input>').addClass('clipboardInput');
-	$('body').append(hiddenObj);
-	hiddenObj.val(value);
-	hiddenObj.select();
-	
-    var isSuccessful;
-    try {
-    	  isSuccessful = document.execCommand("copy");
-    } catch(e) {
-        isSuccessful = false;
-    }
-    
-    hiddenObj.remove();
-	return isSuccessful;
+$.fn.applyLocalText = function(setting) {
+	if (setting == null) return $(this);
+	if ((setting.localText == null) || (setting.localText.length == 0)) return $(this);
+	$(this).text(__(setting.localText));
+	return $(this);
+}
+
+$.fn.applyLocalTitle = function(setting) {
+	if (setting == null) return $(this);
+	if ((setting.localTitle == null) || (setting.localTitle.length == 0)) return $(this);
+	$(this).attr('title', __(setting.localTitle));
+	return $(this);
 }
 
 // Create unique GUID
@@ -77,6 +55,18 @@ $.fn.insert = function(index, obj) {
 	else
 		$(this).children().eq(index - 1).after(obj);
 	return $(this);
+}
+
+function repeatFunction(milliSeconds, callback) {
+	setTimeout(function() {
+		if (callback())
+			repeatFunction(milliSeconds, callback);
+	}, milliSeconds);
+}
+
+function isNotNegativeInteger(str) {
+	var n = ~~Number(str);
+	return (String(n) === str) && (n >= 0);
 }
 
 // Load & show popup
