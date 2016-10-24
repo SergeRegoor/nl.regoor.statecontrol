@@ -7,7 +7,5 @@ The goal of the app is to have a more structured method where multiple flows wil
 
 # Revision history
 
-| Date          | Comments          |
-| ------------- | -------------     |
-| 2016-10-24    | Initial version.  |
+2016-10-24 - v0.0.1 - Initial version
 
