@@ -11,39 +11,45 @@ Homey.manager('flow').on('trigger.state_change.room.autocomplete', function(call
 Homey.manager('flow').on('trigger.state_change.state.autocomplete', function(callback, args){ callback(null, new StateControl().getStatesForAutocomplete(args.args.state_group.stateGroupId)); });
 Homey.manager('flow').on('trigger.request_action.state_group.autocomplete', function(callback, args){ callback(null, new StateControl().getStateGroupsForAutocomplete()); });
 Homey.manager('flow').on('trigger.request_action.room.autocomplete', function(callback, args){ callback(null, new StateControl().getRoomsForAutocomplete(args.args.state_group.stateGroupId)); });
-Homey.manager('flow').on('trigger.request_action.requested_action.autocomplete', function(callback, args){ callback(null, new StateControl().getActionsForAutocomplete(args.args.state_group.stateGroupId)); });
+Homey.manager('flow').on('trigger.request_action.requested_action.autocomplete', function(callback, args){ callback(null, new StateControl().getTriggerableActionsForAutocomplete(args.args.state_group.stateGroupId)); });
 Homey.manager('flow').on('action.set_state.state_group.autocomplete', function(callback, args){ callback(null, new StateControl().getStateGroupsForAutocomplete()); });
 Homey.manager('flow').on('action.set_state.room.autocomplete', function(callback, args){ callback(null, new StateControl().getRoomsForAutocomplete(args.args.state_group.stateGroupId)); });
 Homey.manager('flow').on('action.set_state.state.autocomplete', function(callback, args){ callback(null, new StateControl().getStatesForAutocomplete(args.args.state_group.stateGroupId)); });
 Homey.manager('flow').on('action.perform_action.state_group.autocomplete', function(callback, args){ callback(null, new StateControl().getStateGroupsForAutocomplete()); });
 Homey.manager('flow').on('action.perform_action.room.autocomplete', function(callback, args){ callback(null, new StateControl().getRoomsForAutocomplete(args.args.state_group.stateGroupId)); });
-Homey.manager('flow').on('action.perform_action.action_to_perform.autocomplete', function(callback, args){ callback(null, new StateControl().getActionsForAutocomplete(args.args.state_group.stateGroupId)); });
+Homey.manager('flow').on('action.perform_action.action_to_perform.autocomplete', function(callback, args){ callback(null, new StateControl().getPerformableActionsForAutocomplete(args.args.state_group.stateGroupId)); });
 
 // Check state_change trigger
 Homey.manager('flow').on('trigger.state_change', function(callback, args, state){
 	var canTrigger = false;
 	// Have we been triggered for the correct room & state?
 	if ((args != null) && (state != null)) {
+		var argStateGroupId = '';
 		var argRoomId = '';
 		var argStateId = '';
-		var stateRoomId = '';
-		var stateStateId = '';
-		
+		if ((args.state_group != null) && (args.state_group.stateGroupId != null))
+			argStateGroupId = args.state_group.stateGroupId;
 		if ((args.room != null) && (args.room.roomId != null))
 			argRoomId = args.room.roomId;
 		if ((args.state != null) && (args.state.stateId != null))
 			argStateId = args.state.stateId;
 		
+		var stateStateGroupId = '';
+		var stateRoomId = '';
+		var stateStateId = '';
+		if (state.stateGroupId != null)
+			stateStateGroupId = state.stateGroupId;
 		if (state.roomId != null)
 			stateRoomId = state.roomId;
 		if (state.stateId != null)
 			stateStateId = state.stateId;
 		
-		if ((argRoomId == stateRoomId) && (argStateId == stateStateId)) {
+		if ((argStateGroupId == stateStateGroupId) && (argRoomId == stateRoomId) && (argStateId == stateStateId)) {
 			var stateControl = new StateControl();
+			var stateGroup = stateControl.getStateGroupById(argStateGroupId);
 			var room = stateControl.getRoomById(argRoomId);
 			var state = stateControl.getStateById(argStateId);
-			if ((room != null) && room.isActive && (state != null) && state.isActive)
+			if ((stateGroup != null) && (room != null) && room.isActive && (state != null) && state.isActive)
 				canTrigger = true;
 		}
 	}
@@ -56,26 +62,33 @@ Homey.manager('flow').on('trigger.request_action', function(callback, args, stat
 	var canTrigger = false;
 	// Have we been triggered for the correct room & state?
 	if ((args != null) && (state != null)) {
+		var argStateGroupId = '';
 		var argRoomId = '';
 		var argActionId = '';
-		var stateRoomId = '';
-		var stateActionId = '';
-		
+
+		if ((args.state_group != null) && (args.state_group.stateGroupId != null))
+			argStateGroupId = args.state_group.stateGroupId;
 		if ((args.room != null) && (args.room.roomId != null))
 			argRoomId = args.room.roomId;
 		if ((args.requested_action != null) && (args.requested_action.actionId != null))
 			argActionId = args.requested_action.actionId;
 		
+		var stateStateGroupId = '';
+		var stateRoomId = '';
+		var stateActionId = '';
+		if (state.stateGroupId != null)
+			stateStateGroupId = state.stateGroupId;
 		if (state.roomId != null)
 			stateRoomId = state.roomId;
 		if (state.actionId != null)
 			stateActionId = state.actionId;
 		
-		if ((argRoomId == stateRoomId) && (argActionId == stateActionId)) {
+		if ((argStateGroupId == stateStateGroupId) && (argRoomId == stateRoomId) && (argActionId == stateActionId)) {
 			var stateControl = new StateControl();
+			var stateGroup = stateControl.getStateGroupById(argStateGroupId);
 			var room = stateControl.getRoomById(argRoomId);
 			var action = stateControl.getActionById(argActionId);
-			if ((room != null) && room.isActive && (action != null) && action.isActive)
+			if ((stateGroup != null) && (room != null) && room.isActive && (action != null) && action.isActive && action.isTriggerable)
 				canTrigger = true;
 		}
 	}
@@ -113,28 +126,49 @@ Homey.manager('flow').on('action.perform_action', function(callback, args){
 });
 
 module.exports.performAction = function(room, action) {
-	if ((room == null) || (action == null)) return false;
+	if ((room == null) || (action == null) || (action.followUps == null) || !action.isPerformable) return false;
 	if (!room.isActive || !action.isActive) return false;
 	if (DEBUG) Homey.log('Performing action "' + action.description + '" for room "' + room.description + '".');
-	var canTriggerAction = true;
 	var stateControl = new StateControl();
 	
-	var nextState = stateControl.getStateById(action.stateId);
-	if ((nextState != null) && !module.exports.setRoomState(room, nextState, action.doNotCheckOverruling))
-		canTriggerAction = false;
-	
-	if (canTriggerAction) {
-		var nextAction = stateControl.getActionById(action.actionId);
-		if ((nextAction != null) && nextAction.isActive) {
-			if (DEBUG) Homey.log('Triggering request_action "' + nextAction.description + '" for room "' + room.description + '".');
-			Homey.manager('flow').trigger('request_action', null, {
-				roomId: room.id,
-				actionId: nextAction.id
-			});
+	for (var idx = 0; idx < action.followUps.length; idx++) {
+		var followUp = action.followUps[idx];
+		if (followUp.isActive) {
+			var delayInSeconds = followUp.delaySeconds;
+			if (delayInSeconds <= 0)
+				module.exports.performFollowUp(room, action, followUp);
+			else {
+				setTimeout(function(){
+					module.exports.performFollowUp(room, action, followUp);
+				}, delayInSeconds*1000);
+			}
 		}
 	}
 	return true;
 };
+
+module.exports.performFollowUp = function(room, action, followUp) {
+	if ((room == null) || (followUp == null)) return false;
+	if (!room.isActive || !followUp.isActive) return false;
+	if (DEBUG) Homey.log('Performing follow-up for action "' + action.description + '" for room "' + room.description + '". Follow-up delay '+followUp.delaySeconds+' seconds.');
+	var stateControl = new StateControl();
+	
+	var canTriggerAction = true;
+	var followUpState = stateControl.getStateById(followUp.stateId);
+	if ((followUpState != null) && !module.exports.setRoomState(room, followUpState, followUp.doNotCheckOverruling))
+		canTriggerAction = false;
+	
+	if (canTriggerAction) {
+		var followUpAction = stateControl.getActionById(followUp.actionId);
+		if ((followUpAction != null) && followUpAction.isActive) {
+			if (DEBUG) Homey.log('Triggering request_action "' + followUpAction.description + '" for room "' + room.description + '".');
+			Homey.manager('flow').trigger('request_action', null, {
+				roomId: room.id,
+				actionId: followUpAction.id
+			});
+		}
+	}
+}
 
 module.exports.setRoomState = function(room, newState, doNotCheckOverruling) {
 	if ((room == null) || (newState == null)) return false;

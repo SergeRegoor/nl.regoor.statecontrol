@@ -89,6 +89,7 @@ function loadPopup(id, selector, zIndex, width, height){
 		popupContainer.html(selector.html());
 	popupContainer.find('.closePopup').click(function(){ popupContainer.closePopup(); });
 	popupContainer.css('z-index', zIndex);
+	popupContainer.css('top', zIndex + 'px');
 	popupContainer.css('width', 'calc('+width+'px - 40px)');
 	popupContainer.css('height', 'calc('+height+'px - 40px)');
 	popupContainer.css('margin', '0 0 0 -'+(width/2)+'px');

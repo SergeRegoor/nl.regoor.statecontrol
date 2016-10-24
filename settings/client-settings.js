@@ -2,196 +2,7 @@ var _settingsKey = 'statecontrol-settings';
 var _settings = {};
 
 // Array which will contain all tabs
-var tabs = [];
-
-// Definition of list types
-var listTypes = [
-	{
-		type: 'stateGroups',
-		title: 'State groepen',
-		explanation: 'uitleg over state groepen',
-		addButtonText: 'Toevoegen',
-		source: '_settings.stateGroups',
-		columns: [
-			{ type:'edit', title:'' },
-			{ type:'delete', title:'' },
-			{ property:'description', title:'Omschrijving' }
-		],
-		filter: null,
-		formType: 'stateGroup',
-		deleteItem: function(parentId, stateGroup) {
-			var nrOfRooms = $.grep(_settings.rooms, function(room){ return room.stateGroupId == stateGroup.id; }).length;
-			var nrOfStates = $.grep(_settings.states, function(state){ return state.stateGroupId == stateGroup.id; }).length;
-			var nrOfActions = $.grep(_settings.actions, function(action){ return action.stateGroupId == stateGroup.id; }).length;
-			if ((nrOfRooms > 0) || (nrOfStates > 0) || (nrOfActions)) {
-				var errorMessage = 'De state group is nog in gebruik (';
-				if (nrOfRooms == 1) errorMessage += '1 ruimte'; else if (nrOfRooms > 1) errorMessage += nrOfRooms + ' ruimtes';
-				if ((nrOfRooms >= 1) && (nrOfStates >= 1)) errorMessage += ', ';
-				if (nrOfStates == 1) errorMessage += '1 state'; else if (nrOfStates > 1) errorMessage += nrOfStates + ' states';
-				if (((nrOfRooms+nrOfStates) >= 1) && (nrOfActions >= 1)) errorMessage += ', ';
-				if (nrOfActions == 1) errorMessage += '1 actie'; else if (nrOfActions > 1) errorMessage += nrOfActions + ' acties';
-				errorMessage += ').';
-				alert(errorMessage);
-				return false;
-			}
-			if (!confirm('Weet je zeker dat je de state groep "'+stateGroup.description+'" wilt verwijderen?')) return false;
-			_settings.stateGroups = $.grep(_settings.stateGroups, function(item){ return item.id != stateGroup.id; });
-			saveSettings();
-			initializeTabs();
-			$('.tabControl').invalidateTabs();
-			$('.list[rel-listtype="stateGroups"]').renderList();
-			return true;
-		}
-	},
-	{
-		type: 'rooms',
-		title: 'Ruimtes',
-		explanation: 'uitleg over rooms',
-		addButtonText: 'Toevoegen',
-		source: '_settings.rooms',
-		columns: [
-			{ type:'edit', title:'' },
-			{ type:'delete', title:'' },
-			{ property:'description', title:'Omschrijving' },
-			{ property:'isActive', title:'Actief', propertyType:'boolean' },
-			{ property:'stateId', title:'State', propertyType:'state' }
-		],
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		formType: 'room',
-		deleteItem: function(parentId, room) {
-			if (!confirm('Weet je zeker dat je de ruimte "'+room.description+'" wilt verwijderen?\nFlows waarin je deze ruimte gebruikt, zullen niet meer werken.')) return false;
-			_settings.rooms = $.grep(_settings.rooms, function(item){ return item.id != room.id; });
-			saveSettings();
-			$('.list[rel-listtype="rooms"][rel-parentid="'+room.stateGroupId+'"]').renderList();
-			return true;
-		}
-	},
-	{
-		type: 'states',
-		title: 'States',
-		explanation: 'uitleg over states',
-		addButtonText: 'Toevoegen',
-		source: '_settings.states',
-		columns: [
-			{ type:'edit', title:'' },
-			{ type:'delete', title:'' },
-			{ property:'description', title:'Omschrijving' },
-			{ property:'isActive', title:'Actief', propertyType:'boolean' },
-			{ property:'isOverruling', title:'Prioriteit', propertyType:'boolean' }
-		],
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		formType: 'state',
-		deleteItem: function(parentId, state) {
-			var nrOfRooms = $.grep(_settings.rooms, function(room){ return room.stateId == state.id; }).length;
-			var nrOfStates = $.grep(_settings.states, function(sta){ return sta.delayStateId == state.id; }).length;
-			var nrOfActions = $.grep(_settings.actions, function(action){ return action.nextStateId == state.id; }).length;
-			if ((nrOfRooms > 0) || (nrOfStates > 0) || (nrOfActions)) {
-				var errorMessage = 'De state is nog in gebruik (';
-				if (nrOfRooms == 1) errorMessage += '1 ruimte'; else if (nrOfRooms > 1) errorMessage += nrOfRooms + ' ruimtes';
-				if ((nrOfRooms >= 1) && (nrOfStates >= 1)) errorMessage += ', ';
-				if (nrOfStates == 1) errorMessage += '1 state'; else if (nrOfStates > 1) errorMessage += nrOfStates + ' states';
-				if (((nrOfRooms+nrOfStates) >= 1) && (nrOfActions >= 1)) errorMessage += ', ';
-				if (nrOfActions == 1) errorMessage += '1 actie'; else if (nrOfActions > 1) errorMessage += nrOfActions + ' acties';
-				errorMessage += ').';
-				alert(errorMessage);
-				return false;
-			}
-			if (!confirm('Weet je zeker dat je de state "'+state.description+'" wilt verwijderen?\nFlows waarin je deze state gebruikt, zullen niet meer werken.')) return false;
-			_settings.states = $.grep(_settings.states, function(item){ return item.id != state.id; });
-			saveSettings();
-			$('.list[rel-listtype="states"][rel-parentid="'+state.stateGroupId+'"]').renderList();
-			return true;
-		}
-	},
-	{
-		type: 'actions',
-		title: 'Acties',
-		explanation: 'uitleg over acties',
-		addButtonText: 'Toevoegen',
-		source: '_settings.actions',
-		columns: [
-			{ type:'edit', title:'' },
-			{ type:'delete', title:'' },
-			{ property:'description', title:'Omschrijving' },
-			{ property:'isActive', title:'Actief', propertyType:'boolean' },
-			{ property:'nextStateId', title:'Set state', propertyType:'state' },
-			{ property:'performActionId', title:'Vervolg actie', propertyType:'action' },
-		],
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		formType: 'action',
-		deleteItem: function(parentId, action) {
-			//var nrOfRooms = $.grep(_settings.rooms, function(room){ return room.actionId == action.id; }).length;
-			var nrOfRooms = 0;
-			var nrOfStates = $.grep(_settings.states, function(state){ return state.delayActionIdId == action.id; }).length; // not used yet
-			var nrOfActions = $.grep(_settings.actions, function(act){ return act.performActionId == action.id; }).length;
-			if ((nrOfRooms > 0) || (nrOfStates > 0) || (nrOfActions)) {
-				var errorMessage = 'De state is nog in gebruik (';
-				if (nrOfRooms == 1) errorMessage += '1 ruimte'; else if (nrOfRooms > 1) errorMessage += nrOfRooms + ' ruimtes';
-				if ((nrOfRooms >= 1) && (nrOfStates >= 1)) errorMessage += ', ';
-				if (nrOfStates == 1) errorMessage += '1 state'; else if (nrOfStates > 1) errorMessage += nrOfStates + ' states';
-				if (((nrOfRooms+nrOfStates) >= 1) && (nrOfActions >= 1)) errorMessage += ', ';
-				if (nrOfActions == 1) errorMessage += '1 actie'; else if (nrOfActions > 1) errorMessage += nrOfActions + ' acties';
-				errorMessage += ').';
-				alert(errorMessage);
-				return false;
-			}
-			if (!confirm('Weet je zeker dat je de actie "'+action.description+'" wilt verwijderen?\nFlows waarin je deze actie gebruikt, zullen niet meer werken.')) return false;
-			_settings.actions = $.grep(_settings.actions, function(item){ return item.id != action.id; });
-			saveSettings();
-			$('.list[rel-listtype="actions"][rel-parentid="'+action.stateGroupId+'"]').renderList();
-			return true;
-		}
-	}
-];
-
-// Definition of form types
-var formTypes = [
-	{
-		type: 'stateGroup',
-		source: '_settings.stateGroups',
-		filter: null,
-		listType: 'stateGroups',
-		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true }
-		],
-		afterSave: function(stateGroup) { initializeTabs(); $('.tabControl').invalidateTabs(); }
-	},
-	{
-		type: 'room',
-		source: '_settings.rooms',
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		listType: 'rooms',
-		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true },
-			{ property:'isActive', title:'Actief', propertyType:'boolean', defaultValue:true },
-			{ property:'stateId', title:'State', propertyType:'state', info:'Wanneer je de state handmatig wijzigt, worden eventuele flows getriggered.' }
-		]
-	},
-	{
-		type: 'state',
-		source: '_settings.states',
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		listType: 'states',
-		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true },
-			{ property:'isActive', title:'Actief', propertyType:'boolean', defaultValue:true },
-			{ property:'isOverruling', title:'Prioriteit', propertyType:'boolean', defaultValue:false, info:'Andere states mogen deze state niet overschrijven, tenzij ze zelf overruling zijn.' }
-		]
-	},
-	{
-		type: 'action',
-		source: '_settings.actions',
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		listType: 'actions',
-		fields: [
-			{ property:'description', title:'Omschrijving', isMandatory:true },
-			{ property:'isActive', title:'Actief', propertyType:'boolean', defaultValue:true },
-			{ property:'ignoreOverruling', title:'Negeer "overruling" bij opvolgende state', propertyType:'boolean', defaultValue:false, info:'Vink deze optie aan als je opvolgende state niet overruling is, maar je de opvolgende state alsnog wilt instellen met deze actie.' },
-			{ property:'nextStateId', title:'Opvolgende state', propertyType:'state', addEmptyItem:true },
-			{ property:'performActionId', title:'Vervolg actie uitvoeren', propertyType:'action', addEmptyItem:true, info:'Als je een opvolgende state hebt opgegeven, wordt deze actie alleen uitgevoerd als de opvolgende state kon worden toegepast. Zonder opvolgende state wordt de vervolg actie altijd uitgevoerd.' }
-		]
-	}
-];
+var _tabs = [];
 
 $(document).ready(function(){
 });
@@ -208,7 +19,7 @@ $.fn.invalidateTabs = function() {
 	var tabControlObj = $(this);
 	tabControlObj.find('.tab').each(function(){
 		var tabObj = $(this);
-		var tab = findObjInArray(tabs, 'parentId', tabObj.attr('rel-parentid'));
+		var tab = findObjInArray(_tabs, 'parentId', tabObj.attr('rel-parentid'));
 		if (tab == null) {
 			tabControlObj.find('.page').eq(tabObj.index()).remove();
 			tabObj.remove();
@@ -217,7 +28,7 @@ $.fn.invalidateTabs = function() {
 			tabControlObj.find('.page').eq(tabObj.index()).find('.tabTitle').text(tab.title);
 		}
 	});
-	$.each(tabs, function(i, tab){
+	$.each(_tabs, function(i, tab){
 		var tabObj = tabControlObj.find('.tab[rel-parentid="'+tab.parentId+'"]');
 		if (tabObj.length == 0)
 			loadTab(tab, i);
@@ -234,7 +45,7 @@ function onHomeyReady(){
 		if (_settings.actions == null) _settings.actions = [];
 		
 		initializeTabs();
-		$.each(tabs, function(i, tab){ loadTab(tab, i); });
+		$.each(_tabs, function(i, tab){ loadTab(tab, i); });
 		$('.tabControl .tab').eq(0).selectTab();
 	});
 	
@@ -242,7 +53,7 @@ function onHomeyReady(){
 };
 
 function initializeTabs() {
-	tabs = [];
+	_tabs = [];
 	$.each(_settings.stateGroups, function(i, stateGroup){ addStateGroupTab(stateGroup); });
 	addSettingsTab();
 }
@@ -251,8 +62,8 @@ function saveSettings() {
 	Homey.set(_settingsKey, _settings);	
 };
 
-function addStateGroupTab(stateGroup) { tabs[tabs.length] = { title:stateGroup.description, parentId:stateGroup.id, controls:[{type:'list', listType:'rooms' }, {type:'list', listType:'states' }, {type:'list', listType:'actions' }] }; }
-function addSettingsTab() { tabs[tabs.length] = { title:'Instellingen', parentId:'', controls:[{type:'list', listType:'stateGroups' }] }; }
+function addStateGroupTab(stateGroup) { _tabs[_tabs.length] = { title:stateGroup.description, parentId:stateGroup.id, controls:[{type:'list', listType:'rooms' }, {type:'list', listType:'states' }, {type:'list', listType:'actions' }] }; }
+function addSettingsTab() { _tabs[_tabs.length] = { title:'Instellingen', parentId:'', controls:[{type:'list', listType:'stateGroups' }] }; }
 
 // Load the tab and its controls
 function loadTab(tab, index) {
@@ -265,14 +76,14 @@ function loadTab(tab, index) {
 	// Iterate through defined controls, and add them
 	$.each(tab.controls, function(i, control){
 		if (control.type == 'list')
-			loadList(control.listType, tab.parentId, page);
+			loadList(control.listType, null, tab.parentId, page);
 	});
 }
 
 // Load a list into its container
-function loadList(listTypeName, parentId, containerObj) {
+function loadList(listTypeName, masterParentId, parentId, containerObj) {
 	// Find the list type
-	var listType = findObjInArray(listTypes, 'type', listTypeName);
+	var listType = findObjInArray(_listTypes, 'type', listTypeName);
 	if (listType == null) return;
 	
 	// Add the list's container, title and explanation
@@ -281,19 +92,19 @@ function loadList(listTypeName, parentId, containerObj) {
 	listParentObj.append($('<legend/>').text(listType.title));
 	listParentObj.append($('<p/>').text(listType.explanation));
 	
+	// Add the header row and its columns
+	var headRowObj = $('<div/>').addClass('lister listRow head').attr('rel-listtype', listTypeName);
+	listParentObj.append(headRowObj);
+	$.each(listType.columns, function(i, column){ headRowObj.append($('<div/>').addClass('col').text(column.title)); });
+	
 	// Create the list object
-	var listObj = $('<div/>').addClass('list').attr('rel-parentid', parentId).attr('rel-listtype', listTypeName);
+	var listObj = $('<div/>').addClass('list lister').attr('rel-masterparentid', masterParentId).attr('rel-parentid', parentId).attr('rel-listtype', listTypeName);
 	listParentObj.append(listObj);
 	
 	// Add button
-	var addButtonObj = $('<button/>').text(listType.addButtonText).attr('rel-parentid', parentId).attr('rel-formtype', listType.formType).click(function(){ $(this).showForm(); });
+	var addButtonObj = $('<button/>').text(listType.addButtonText).attr('rel-masterparentid', masterParentId).attr('rel-parentid', parentId).attr('rel-formtype', listType.formType).click(function(){ $(this).showForm(); });
 	listParentObj.append(addButtonObj);
-	
-	// Add the header row and its columns
-	var headRowObj = $('<div/>').addClass('row head');
-	listObj.append(headRowObj);
-	$.each(listType.columns, function(i, column){ headRowObj.append($('<div/>').addClass('col').text(column.title)); });
-	
+		
 	// Render the list
 	listObj.renderList();
 }
@@ -302,17 +113,23 @@ function loadList(listTypeName, parentId, containerObj) {
 $.fn.renderList = function() {
 	// Get the list object and the list type definition
 	var listObj = $(this);
-	var listType = findObjInArray(listTypes, 'type', listObj.attr('rel-listtype'));
+	var listType = findObjInArray(_listTypes, 'type', listObj.attr('rel-listtype'));
 	if (listType == null) return;
+	var masterParentId = listObj.attr('rel-masterparentid');
+	var parentId = listObj.attr('rel-parentid');
 	
 	// Remove current item rows
 	listObj.find('.row.item').remove();
 	
 	// Determine source items (and if specified, with filter)
-	var compareToValue = '';
-	if ((listType.filter != null) && (listType.filter.compareTo == 'parentId'))
-		compareToValue = listObj.attr('rel-parentid');
-	var sourceItems = getFilteredSourceItems(listType.source, listType.filter, compareToValue);
+	var sourceItems = [];
+	if (listType.filter != null) {
+		var compareToValue = '';
+		if (listType.filter.compareTo == 'parentId')
+			compareToValue = parentId;
+		sourceItems = getFilteredSourceItems(listType.source, listType.filter, compareToValue);
+	} else
+		sourceItems = eval(listType.source);
 	
 	if ((sourceItems == null) || (sourceItems.length == 0))
 		listObj.hide();
@@ -329,10 +146,12 @@ $.fn.renderList = function() {
 		$.each(listType.columns, function(i, column){
 			var cellObj = $('<div/>').addClass('col');
 			if (column.type == 'edit')
-				cellObj.append($('<button/>').text('Wijzig').attr('rel-id',sourceItem.id).attr('rel-parentid', listObj.attr('rel-parentid')).attr('rel-formtype', listType.formType).click(function(){ $(this).showForm(); }));
-			else if (column.type == 'delete') {
-				cellObj.append($('<button/>').text('Verwijder').attr('rel-id',sourceItem.id).attr('rel-parentid', listObj.attr('rel-parentid')).click(function(){ if (listType.deleteItem != null) listType.deleteItem(listObj.attr('rel-parentid'), sourceItem); }));
-			} else {
+				cellObj.append($('<button/>').text('Wijzig').addClass('editButton').attr('rel-id',sourceItem.id).attr('rel-masterparentid', masterParentId).attr('rel-parentid', parentId).attr('rel-formtype', listType.formType).click(function(){ $(this).showForm(); }));
+			else if (column.type == 'delete')
+				cellObj.append($('<button/>').text('Verwijder').addClass('deleteButton').attr('rel-id',sourceItem.id).attr('rel-parentid', parentId).click(function(){ if (listType.deleteItem != null) listType.deleteItem(listObj.attr('rel-masterparentid'), listObj.attr('rel-parentid'), sourceItem); }));
+			else if (column.type == 'move')
+				cellObj.append($('<button/>').text('Verplaats').addClass('moveButton').attr('rel-id',sourceItem.id).attr('rel-parentid', parentId));
+			else {
 				var cellValue = '';
 				if (column.propertyType == 'boolean')
 					cellValue = sourceItem[column.property] ? 'Ja' : 'Nee';
@@ -344,6 +163,8 @@ $.fn.renderList = function() {
 					var action = findObjInArray(_settings.actions, 'id', sourceItem[column.property]);
 					if (action != null) cellValue = action.description;
 				}
+				else if (column.propertyType == 'array')
+					cellValue = sourceItem[column.property].length;
 				else
 					cellValue = sourceItem[column.property];
 				cellObj.text(cellValue);
@@ -351,6 +172,24 @@ $.fn.renderList = function() {
 			rowObj.append(cellObj);
 		});
 	});
+	
+	listObj.dragsort('destroy');
+	listObj.dragsort({dragSelector:'.moveButton', dragBetween:false, dragEnd:function(){
+		var sourceItem = findObjInArray(sourceItems, 'id', $(this).attr('rel-id'));
+		if (sourceItem == null) return;
+		if (($(this).index() < 0) || ($(this).index() >= sourceItems.length)) return;
+		var destinationItem = sourceItems[$(this).index()];
+		if (destinationItem == null) return;
+		var unfilteredSourceItems = eval(listType.source);
+		if ((unfilteredSourceItems == null) || (unfilteredSourceItems.length == 0)) return;
+		var indexOfDestinationItem = unfilteredSourceItems.indexOf(destinationItem);
+		if ((indexOfDestinationItem < 0) || (indexOfDestinationItem >= unfilteredSourceItems.length)) return;
+		var indexOfSourceItem = unfilteredSourceItems.indexOf(sourceItem);
+		if ((indexOfSourceItem < 0) || (indexOfSourceItem >= unfilteredSourceItems.length)) return;
+		unfilteredSourceItems.splice(indexOfDestinationItem, 0, unfilteredSourceItems.splice(indexOfSourceItem, 1)[0]);
+		saveSettings();
+		listObj.renderList();
+	}});
 }
 
 function getFilteredSourceItems(source, filter, compareToValue) {
@@ -364,13 +203,14 @@ function getFilteredSourceItems(source, filter, compareToValue) {
 $.fn.showForm = function() {
 	// Get the button object and the settings from its attributes
 	var buttonObj = $(this);
+	var masterParentId = buttonObj.attr('rel-masterparentid');
 	var parentId = buttonObj.attr('rel-parentid');
 	var itemId = buttonObj.attr('rel-id');
 	if ((itemId == null) || (itemId.length == 0)) itemId = '';
 	
 	// Get the form type
 	var formTypeName = buttonObj.attr('rel-formtype');
-	var formType = findObjInArray(formTypes, 'type', formTypeName);
+	var formType = findObjInArray(_formTypes, 'type', formTypeName);
 	if (formType == null) return;
 	
 	// Create the popup
@@ -379,76 +219,131 @@ $.fn.showForm = function() {
 		var fieldType = getFieldTypeOfFormField(field);
 		if (fieldType == 'boolean')
 			popupHeight += 35;
+		else if (fieldType == 'array')
+			popupHeight += 200;
 		else
 			popupHeight += 65;
 	});
-	var popupContainer = loadPopup(createGuid(), null, 100, 450, popupHeight);
+	
+	var zIndex = 100;
+	if ((masterParentId != null) && (masterParentId.length > 0))
+		zIndex = 150;
+	
+	var popupWidth = 450;
+	if ((formType.popupWidth != null) && (formType.popupWidth > 0))
+		popupWidth = formType.popupWidth;
+	var popupContainer = loadPopup(createGuid(), null, zIndex, popupWidth, popupHeight);
 	
 	// Get the source item, or create a new one
-	var compareToValue = '';
-	if ((formType.filter != null) && (formType.filter.compareTo == 'parentId'))
-		compareToValue = parentId;
-	var sourceItems = getFilteredSourceItems(formType.source, formType.filter, compareToValue);
+	var sourceItems = [];
+	if (formType.filter != null) {
+		var compareToValue = '';
+		if (formType.filter.compareTo == 'parentId')
+			compareToValue = parentId;
+		sourceItems = getFilteredSourceItems(formType.source, formType.filter, compareToValue);
+	} else
+		sourceItems = eval(formType.source);
+	
+	var isNew = false;
 	var sourceItem = findObjInArray(sourceItems, 'id', itemId);
 	if (sourceItem == null) {
+		isNew = true;
 		sourceItem = { id:createGuid() };
 		if ((formType.filter != null) && (formType.filter.property != null) && (parentId != null) && (parentId.length > 0))
 			sourceItem[formType.filter.property] = parentId;
 		// Fill the new source item with default values
 		$.each(formType.fields, function(i, field){
-			var defaultValue = '';
-			if (field.defaultValue != null)
-				defaultValue = field.defaultValue;
-			sourceItem[field.property] = defaultValue;
+			if (field.propertyType != 'array') {
+				var defaultValue = '';
+				if (field.defaultValue != null)
+					defaultValue = field.defaultValue;
+				sourceItem[field.property] = defaultValue;
+			} else
+				sourceItem[field.property] = [];
 		});
 	}
 	
+	popupContainer.attr('rel-id', sourceItem.id);
+	
 	// Render the fields
+	var columnContainer = null;
 	$.each(formType.fields, function(i, field){
-		var fieldType = getFieldTypeOfFormField(field);
-		var fieldRowObj = $('<div/>').addClass('field row');
-		popupContainer.append(fieldRowObj);
-		if ((field.info != null) && (field.info.length > 0))
-			fieldRowObj.append($('<div/>').addClass('infoTooltip').text(field.info).click(function(){
-				var tooltipPopup = loadPopup(createGuid(), null, 200, 450, 175);
-				tooltipPopup.append($('<p/>').text(field.info));
-				tooltipPopup.append($('<button/>').addClass('right').text('Sluiten').click(function(){ tooltipPopup.closePopup(); }));
-			}));
-		if (fieldType == 'boolean')
-			fieldRowObj.append($('<input/>').attr('type', 'checkbox').attr('id', 'field'+field.property).prop('checked', sourceItem[field.property]));
-		fieldRowObj.append($('<label/>').attr('for', 'field'+field.property).text(field.title));
-		if (fieldType == 'text')
-			fieldRowObj.append($('<input/>').attr('type', 'text').attr('id', 'field'+field.property).val(sourceItem[field.property]));
-		else if ((fieldType == 'state') || (fieldType == 'action')) {
-			var selectObj = $('<select/>').attr('id', 'field'+field.property);
-			fieldRowObj.append(selectObj);
-			if (field.addEmptyItem) selectObj.append($('<option/>').val('').text(''));
-			var listItems = [];
-			if (fieldType == 'state')
-				listItems = _settings.states;
-			else if (fieldType == 'action')
-				listItems = _settings.actions;
-			$.each($.grep(listItems, function(item){ return (item.stateGroupId == parentId) && (item.id != sourceItem.id); }), function(i, item){
-				selectObj.append($('<option/>').val(item.id).text(item.description));
-			});
-			selectObj.val(sourceItem[field.property]);
+		if (field.propertyType != 'array') {
+			var fieldParent = popupContainer;
+			var fieldType = getFieldTypeOfFormField(field);
+			
+			if ((field.width != null) && (field.width > 0) && (columnContainer == null)) {
+				columnContainer = $('<div/>').addClass('columnContainer');
+				popupContainer.append(columnContainer);
+			} else if (((field.width == null) || (field.width <= 0)) && (columnContainer != null))
+				columnContainer = null;
+				
+			if ((field.width != null) && (field.width > 0) && (columnContainer != null)) {
+				fieldParent = $('<div/>').addClass('col').css('width', field.width+'%');
+				columnContainer.append(fieldParent);
+			}
+			
+			var fieldRowObj = $('<div/>').addClass('field row');
+			fieldParent.append(fieldRowObj);
+			if ((field.info != null) && (field.info.length > 0))
+				fieldRowObj.append($('<div/>').addClass('infoTooltip').text(field.info).click(function(){
+					var tooltipPopup = loadPopup(createGuid(), null, 200, 450, 175);
+					tooltipPopup.append($('<p/>').text(field.info));
+					tooltipPopup.append($('<button/>').addClass('right').text('Sluiten').click(function(){ tooltipPopup.closePopup(); }));
+				}));
+			if (fieldType == 'boolean')
+				fieldRowObj.append($('<input/>').attr('type', 'checkbox').attr('id', 'field'+field.property).prop('checked', sourceItem[field.property]));
+			fieldRowObj.append($('<label/>').attr('for', 'field'+field.property).text(field.title));
+			if (fieldType == 'text')
+				fieldRowObj.append($('<input/>').attr('type', 'text').attr('id', 'field'+field.property).val(sourceItem[field.property]));
+			else if ((fieldType == 'state') || (fieldType == 'action')) {
+				var selectObj = $('<select/>').attr('id', 'field'+field.property);
+				fieldRowObj.append(selectObj);
+				if (field.addEmptyItem) selectObj.append($('<option/>').val('').text(''));
+				var listItems = [];
+				if (fieldType == 'state')
+					listItems = _settings.states;
+				else if (fieldType == 'action')
+					listItems = _settings.actions;
+				$.each($.grep(listItems, function(item){
+					if ((masterParentId != null) && (masterParentId.length > 0))
+						return (item.stateGroupId == masterParentId) && (item.id != sourceItem.id) && (item.id != parentId);
+					else
+						return (item.stateGroupId == parentId) && (item.id != sourceItem.id) && (item.id != parentId);
+				}), function(i, item){
+					selectObj.append($('<option/>').val(item.id).text(item.description));
+				});
+				selectObj.val(sourceItem[field.property]);
+			}
+			if (i == 0) fieldRowObj.find('input').eq(0).focus();
 		}
-		if (i == 0) fieldRowObj.find('input').eq(0).focus();
 	});
+	
+	// Render additional controls
+	if (!isNew && (formType.controls != null) && (formType.controls.length > 0)) {
+		// Iterate through defined controls, and add them
+		$.each(formType.controls, function(i, control){
+			if (control.type == 'list')
+				loadList(control.listType, parentId, sourceItem.id, popupContainer);
+		});
+	}
 	
 	// Add the save button
 	popupContainer.append($('<button/>').addClass('right').text('Bewaren').click(function(){
 		// Validate input
 		var errorMessages = '';
 		$.each(formType.fields, function(i, field){
-			if ((field.isMandatory != null) && field.isMandatory && (getFieldValueOfFormField(popupContainer, field).toString().length == 0))
-				errorMessages += field.title + ' is verplicht.\n';
+			if (field.propertyType != 'array') {
+				if ((field.isMandatory != null) && field.isMandatory && (getFieldValueOfFormField(popupContainer, field).toString().length == 0))
+					errorMessages += field.title + ' is verplicht.\n';
+			}
 		});
 		if (errorMessages.length > 0) { alert(errorMessages); return; }
 		
 		// Save field values to source item
 		$.each(formType.fields, function(i, field){
-			sourceItem[field.property] = getFieldValueOfFormField(popupContainer, field);
+			if (field.propertyType != 'array')
+				sourceItem[field.property] = getFieldValueOfFormField(popupContainer, field);
 		});
 		
 		// Add the source item to its source, if it's new
@@ -489,4 +384,8 @@ function getFieldValueOfFormField(formContainer, field) {
 	else
 		fieldValue = fieldObj.val();
 	return fieldValue;
+}
+
+function getActionById(actionId) {
+	return findObjInArray(_settings.actions, "id", actionId);
 }
