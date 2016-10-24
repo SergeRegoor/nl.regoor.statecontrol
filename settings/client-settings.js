@@ -288,13 +288,15 @@ $.fn.showForm = function() {
 		if (fieldType == 'boolean')
 			popupHeight += 35;
 		else if (fieldType == 'array')
-			popupHeight += 200;
+			popupHeight += 250;
 		else
 			popupHeight += 65;
 	});
-	var zIndex = 100;
+	var zIndex = 25;
 	if ((masterParentId != null) && (masterParentId.length > 0))
-		zIndex = 150;
+		zIndex = 50;
+	if ((popupHeight + zIndex) > ($(window).height() - 25))
+		popupHeight = $(window).height() - 50;
 	var popupWidth = 450;
 	if ((formType.popupWidth != null) && (formType.popupWidth > 0))
 		popupWidth = formType.popupWidth;

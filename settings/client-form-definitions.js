@@ -73,8 +73,8 @@ var _formTypes = [
 			{ property:'isActive', title:{localText:'edit.followUp.isActive'}, width:20, propertyType:'boolean', defaultValue:true },
 			{ property:'doNotCheckOverruling', title:{localText:'edit.followUp.doNotCheckOverruling'}, width:80, propertyType:'boolean', defaultValue:false, info:{localText:'edit.followUp.doNotCheckOverrulingInfo'} },
 			{ property:'delaySeconds', title:{localText:'edit.followUp.delaySeconds'}, defaultValue:0, isNumeric:true },
-			{ property:'stateId', title:{localText:'edit.followUp.nextState'}, propertyType:'state' },
-			{ property:'actionId', title:{localText:'edit.followUp.nextAction'}, propertyType:'action', info:{localText:'edit.followUp.nextActionInfo'} }
+			{ property:'stateId', title:{localText:'edit.followUp.nextState'}, propertyType:'state', addEmptyItem:true },
+			{ property:'actionId', title:{localText:'edit.followUp.nextAction'}, propertyType:'action', addEmptyItem:true, info:{localText:'edit.followUp.nextActionInfo'} }
 		]
 	}
 ];
