@@ -137,7 +137,7 @@ function loadList(listTypeName, masterParentId, parentId, containerObj) {
 	if (listType == null) return;
 	
 	// Add the list's container, title and explanation
-	var listParentObj = $('<fieldset/>');
+	var listParentObj = $('<fieldset/>').addClass('listContainer');
 	containerObj.append(listParentObj);
 	listParentObj.append($('<legend/>').applyLocalText(listType.title));
 	listParentObj.append($('<p/>').applyLocalText(listType.explanation));
@@ -160,6 +160,8 @@ function loadList(listTypeName, masterParentId, parentId, containerObj) {
 		
 	// Render the list
 	listObj.renderList();
+	
+	return listParentObj;
 }
 
 // Render a list's items
@@ -351,6 +353,7 @@ $.fn.showForm = function() {
 			// Create the field container
 			var fieldRowObj = $('<div/>').addClass('field row');
 			fieldParent.append(fieldRowObj);
+			var inputControl = null;
 			
 			// Show a clickable tool tip if necessary
 			if ((field.info != null) && (field.info.localText != null) && (field.info.localText.length > 0))
@@ -361,23 +364,25 @@ $.fn.showForm = function() {
 				}));
 			
 			// If the field is for a boolean, the checkbox needs to be shown before the label
-			if (fieldType == 'boolean')
-				fieldRowObj.append($('<input/>').attr('type', 'checkbox').attr('id', 'field'+field.property).prop('checked', sourceItem[field.property]));
+			if (fieldType == 'boolean') {
+				inputControl = $('<input/>').attr('type', 'checkbox').attr('id', 'field'+field.property).prop('checked', sourceItem[field.property]);
+				fieldRowObj.append(inputControl);
+			}
 			
 			// Add the label
 			fieldRowObj.append($('<label/>').attr('for', 'field'+field.property).applyLocalText(field.title));
 			
 			// Add a text input if appropriate
-			if (fieldType == 'text')
-				fieldRowObj.append($('<input/>').attr('type', 'text').attr('id', 'field'+field.property).val(sourceItem[field.property]));
-			else if ((fieldType == 'state') || (fieldType == 'newRoomState') || (fieldType == 'action')) {
+			if (fieldType == 'text') {
+				inputControl = $('<input/>').attr('type', 'text').attr('id', 'field'+field.property).val(sourceItem[field.property]);
+				fieldRowObj.append(inputControl);
+			} else if ((fieldType == 'state') || (fieldType == 'newRoomState') || (fieldType == 'action')) {
 				// Add a dropdown if appropriate
 				var selectObj = $('<select/>');
 				if (field.property != null)
 					selectObj.attr('id', 'field'+field.property);
 				else if (field.type != null)
 					selectObj.attr('id', 'field'+field.type);
-				fieldRowObj.append(selectObj);
 				if (field.addEmptyItem) selectObj.append($('<option/>').val('').text(''));
 				
 				// Determine the dropdown's list items
@@ -399,6 +404,8 @@ $.fn.showForm = function() {
 				
 				// Set the current value
 				selectObj.val(sourceItem[field.property]);
+				inputControl = selectObj;
+				fieldRowObj.append(inputControl);
 			}
 			else if (fieldType == 'currentRoomState') {
 				var roomStateObj = $('<div/>');
@@ -413,6 +420,12 @@ $.fn.showForm = function() {
 				repeatFunction(250, updateRoomState);
 			}
 			
+			if ((inputControl != null) && (field.onChange != null)) {
+				inputControl.change(function(){ field.onChange(popupContainer, inputControl); });
+				inputControl.blur(function(){ field.onChange(popupContainer, inputControl); });
+				inputControl.focus(function(){ field.onChange(popupContainer, inputControl); });
+			}
+			
 			// Set client's focus on the first field
 			if (i == 0) fieldRowObj.find('input').eq(0).focus();
 		}
@@ -422,8 +435,10 @@ $.fn.showForm = function() {
 	if (!isNew && (formType.controls != null) && (formType.controls.length > 0)) {
 		// Iterate through defined controls, and add them
 		$.each(formType.controls, function(i, control){
-			if (control.type == 'list')
-				loadList(control.listType, parentId, sourceItem.id, popupContainer);
+			if (control.type == 'list') {
+				var listObj = loadList(control.listType, parentId, sourceItem.id, popupContainer);
+				listObj.hide();
+			}
 		});
 	}
 	
@@ -468,6 +483,9 @@ $.fn.showForm = function() {
 	
 	// Load localized texts
 	popupContainer.loadLocalizedTexts();
+	
+	if (formType.onShow != null)
+		formType.onShow(popupContainer, sourceItem);
 }
 
 // Get source items, filtered is necessary

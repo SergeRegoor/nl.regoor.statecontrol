@@ -48,12 +48,21 @@ var _formTypes = [
 			{ property:'description', title:{localText:'edit.action.description'}, isMandatory:true },
 			{ property:'isActive', title:{localText:'edit.action.isActive'}, propertyType:'boolean', defaultValue:true },
 			{ property:'isTriggerable', title:{localText:'edit.action.isTriggerable'}, width:50, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isTriggerableInfo'} },
-			{ property:'isPerformable', title:{localText:'edit.action.isPerformable'}, width:50, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isPerformableInfo'} },
+			{ property:'isPerformable', title:{localText:'edit.action.isPerformable'}, width:50, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isPerformableInfo'}, onChange:function(formObj, checkBox){
+				formObj.find('.listContainer').hide();
+				if (checkBox.is(':checked'))
+					formObj.find('.listContainer').show();
+			} },
 			{ property:'followUps', propertyType:'array' }
 		],
 		controls: [
 			{type:'list', listType:'followUps' }
-		]
+		],
+		onShow: function(formObj, action) {
+			formObj.find('.listContainer').hide();
+			if (action.isPerformable)
+				formObj.find('.listContainer').show();
+		}
 	},
 	{
 		type: 'followUp',
