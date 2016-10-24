@@ -1,1 +1,136 @@
-{}
+{
+	"boolean": {
+		"yes": "Yes",
+		"no": "No"
+	},
+	
+	"close": "Close",
+	
+	"tab": {
+		"settings": {
+			"title": "Settings"
+		}
+	},
+	
+	"list": {
+		"editButton": "Edit",
+		"deleteButton": "Delete",
+		"moveButton": "Drag to move",
+		
+		"stateGroups": {
+			"title": "Groups",
+			"explanation": "",
+			"addButton": "Add",
+			"description": "Description",
+			"confirmDelete": "Are you sure you want to delete the group \"[description]\"?",
+			"inUse": {
+				"error": "The group is still in use"
+			}
+		},
+		"rooms": {
+			"title": "Sections",
+			"explanation": "",
+			"addButton": "Add",
+			"description": "Description",
+			"isActive": "Active",
+			"currentState": "Current state",
+			"confirmDelete": "Are you sure you want to delete the section \"[description]\"?",
+			"inUse": {
+				"one": "one section",
+				"multiple": "[quantity] sections"
+			}
+		},
+		"states": {
+			"title": "States",
+			"explanation": "",
+			"addButton": "Add",
+			"description": "Description",
+			"isActive": "Active",
+			"isOverruling": "Priority",
+			"confirmDelete": "Are you sure you want to delete the state \"[description]\"?",
+			"inUse": {
+				"error": "The state is still in use",
+				"one": "one state",
+				"multiple": "[quantity] states"
+			}
+		},
+		"actions": {
+			"title": "Actions",
+			"explanation": "",
+			"addButton": "Add",
+			"description": "Description",
+			"isActive": "Active",
+			"isTriggerable": "Triggerable",
+			"isPerformable": "Performable",
+			"nrOfFollowUps": "# Follow-ups",
+			"confirmDelete": "Are you sure you want to delete the action \"[description]\"?",
+			"inUse": {
+				"error": "The action is still in use",
+				"one": "one action",
+				"multiple": "[quantity] actions"
+			}
+		},
+		"followUps": {
+			"title": "Follow-ups",
+			"explanation": "",
+			"addButton": "Add",
+			"isActive": "Active",
+			"delaySeconds": "Delay",
+			"newState": "Next state",
+			"newAction": "Next action",
+			"confirmDelete": "Are you sure you want to delete this follow-up?",
+			"inUse": {
+				"one": "one follow-up",
+				"multiple": "[quantity] follow-ups"
+			}
+		}
+	},
+	
+	"edit": {
+		"saveButton": "Save",
+		"cancelButton": "Cancel",
+		
+		"error": {
+			"isMandatory": "[field] is mandatory.",
+			"isNotPositiveNumber": "[field] must be a positive number."
+		},
+		
+		"stateGroup": {
+			"description" : "Description"
+		},
+		
+		"room": {
+			"description" : "Description",
+			"isActive": "Active",
+			"currentState": "Current state",
+			"newState": "New state",
+			"newStateInfo": "When you change the section's state manually, the \"State change\" trigger will be fired in your flows (if applicable)."
+		},
+		
+		"state": {
+			"description" : "Description",
+			"isActive": "Active",
+			"isOverruling": "Priority",
+			"isOverrulingInfo": "Other states cannot overwrite this state, unless the other state has been set as priority as well."
+		},
+		
+		"action": {
+			"description" : "Description",
+			"isActive": "Active",
+			"isTriggerable": "Can be triggered in flows",
+			"isTriggerableInfo": "If checked, the action can be used in flow triggers.",
+			"isPerformable": "Can be performed in flows",
+			"isPerformableInfo": "If checked, the action can be performed in flows."
+		},
+		
+		"followUp": {
+			"isActive": "Active",
+			"doNotCheckOverruling": "Do not respect priority of current state",
+			"doNotCheckOverrulingInfo": "Normally the follow-up state will only be set if it is either a priority, or if the current state is not a priority. By checking this option, the state will be set anyhow.",
+			"delaySeconds": "Delay in seconds",
+			"nextState": "Follow-up state",
+			"nextAction": "Follow-up action",
+			"nextActionInfo": "The follow-up action will only be performed if your follow-up state can be set with respect to the current state's priority. If you have not specified a follow-up state, the follow-up action will be performed anyhow."
+		}
+	}
+}

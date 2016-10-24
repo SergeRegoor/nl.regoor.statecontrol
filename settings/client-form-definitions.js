@@ -46,9 +46,9 @@ var _formTypes = [
 		listType: 'actions',
 		fields: [
 			{ property:'description', title:{localText:'edit.action.description'}, isMandatory:true },
-			{ property:'isActive', title:{localText:'edit.action.isActive'}, width:20, propertyType:'boolean', defaultValue:true },
-			{ property:'isTriggerable', title:{localText:'edit.action.isTriggerable'}, width:40, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isTriggerableInfo'} },
-			{ property:'isPerformable', title:{localText:'edit.action.isPerformable'}, width:40, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isPerformableInfo'} },
+			{ property:'isActive', title:{localText:'edit.action.isActive'}, propertyType:'boolean', defaultValue:true },
+			{ property:'isTriggerable', title:{localText:'edit.action.isTriggerable'}, width:50, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isTriggerableInfo'} },
+			{ property:'isPerformable', title:{localText:'edit.action.isPerformable'}, width:50, propertyType:'boolean', defaultValue:true, info:{localText:'edit.action.isPerformableInfo'} },
 			{ property:'followUps', propertyType:'array' }
 		],
 		controls: [
@@ -61,8 +61,8 @@ var _formTypes = [
 		filter: null,
 		listType: 'followUps',
 		fields: [
-			{ property:'isActive', title:{localText:'edit.followUp.isActive'}, width:30, propertyType:'boolean', defaultValue:true },
-			{ property:'doNotCheckOverruling', title:{localText:'edit.followUp.doNotCheckOverruling'}, width:70, propertyType:'boolean', defaultValue:false, info:{localText:'edit.followUp.doNotCheckOverrulingInfo'} },
+			{ property:'isActive', title:{localText:'edit.followUp.isActive'}, width:20, propertyType:'boolean', defaultValue:true },
+			{ property:'doNotCheckOverruling', title:{localText:'edit.followUp.doNotCheckOverruling'}, width:80, propertyType:'boolean', defaultValue:false, info:{localText:'edit.followUp.doNotCheckOverrulingInfo'} },
 			{ property:'delaySeconds', title:{localText:'edit.followUp.delaySeconds'}, defaultValue:0, isNumeric:true },
 			{ property:'stateId', title:{localText:'edit.followUp.nextState'}, propertyType:'state' },
 			{ property:'actionId', title:{localText:'edit.followUp.nextAction'}, propertyType:'action', info:{localText:'edit.followUp.nextActionInfo'} }
