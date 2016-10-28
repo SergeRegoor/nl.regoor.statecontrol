@@ -1,0 +1,90 @@
+<h2>Hoe werkt State Control?</h2>
+<p>
+	Een sectie (dit kan een kamer zijn) kan een "state" toegekend krijgen, bijvoorbeeld "Het licht is uit" of "Het licht is aan door beweging". State wijzigingen, een state
+	als conditie of het wijzigen van een state kun je bepalen in je flow editor middels flow cards.<br/>
+	Let op: states, events, flow acties en flow triggers werken altijd <em>voor elke sectie</em>, oftewel zijn in je flows universeel inzetbaar voor alle secties voor de betreffende
+	groep.
+</p>
+
+<h2>Flow acties</h2>
+<p>
+	Gebruik een flow actie om in je flow aan te kunnen roepen als "actie die uitgevoerd moet worden". De flow actie voer je uit in de rechterkolom van de flow editor.<br/>
+	Elke keer als je een flow actie laat uitvoeren, zal de app kijken welke events van toepassing zijn om verder te behandelen. De flow actie zelf doet dus niets: je zult
+	nog een event moeten aanmaken om te bepalen wat er moet gebeuren bij de betreffende flow.
+</p>
+
+<h2>Flow triggers</h2>
+<p>
+	Gebruik een flow trigger om in je event aan te geven wanneer een vervolgactie moet plaatsvinden, nadat een flow card is uitgevoerd. Een flow trigger gebruik je in 
+	de linkerkolom van de flow editor.
+</p>
+
+<h2>Events</h2>
+<p>
+	Een event gebruik je om de flow acties en triggers samen te voegen. Wanneer een actie wordt uitgevoerd vanuit een flow card in de rechterkolom van de flow
+	editor, kan een event in werking treden. Een event kan een state wijzigen, maar ook een flow trigger laten uitvoeren. Als een flow trigger wordt uitgevoerd door een
+	event, zullen je flows worden aangeroepen die in de linkerkolom een flow card hebben met de betreffende trigger.
+</p>
+
+<h2>Instellingen bij een event</h2>
+<ol style="margin-left:15px;">
+	<li>
+		<strong>Dit event gebeurt wanneer</strong><br/>
+		Deze instelling bepaalt wanneer dit event in werking zal treden. Je geeft een flow actie op, die je uitvoert in de rechterkolom van de flow editor.
+	</li>
+	<li>
+		<strong>Vertraging in seconden</strong> <em>(optioneel)</em><br/>
+		Als je event met vertraging moet worden uitgevoerd, kun je de vertraging in seconden invoeren. Let op, de vertraging geldt voor zowel het toekennen van een state, als ook het uitvoeren van een flow trigger.
+	</li>
+	<li>
+		<strong>State moet onderstaande zijn</strong> <em>(optioneel)</em><br/>
+		Als je event alleen in werking mag treden als de een bepaalde state van toepassing moet zijn, geef je deze op. Je kunt het vinkje uitzetten als het event in werking moet treden als de state juist <em>niet</em> van toepassing moet zijn.
+	</li>
+	<li>
+		<strong>Nieuwe state</strong><br/>
+		Geef optioneel op wanneer een nieuwe state toegekend moet worden wanneer het event in werking zal treden. Als je geen nieuwe state opgeeft, is een flow trigger verplicht.
+	</li>
+	<li>
+		<strong>Zet state ongeacht de prioriteit</strong><br/>
+		Als je een nieuwe state toe gaat kennen, zal deze normaliter rekening houden met de prioriteit van de huidige state. Dus als de huidige state prioriteit heeft en de nieuwe state niet, zal de nieuwe state <em>niet</em> worden toegepast.
+		Gebruik deze instelling om de state toe te passen, ongeacht de prioriteit.
+	</li>
+	<li>
+		<strong>Trigger een flow</strong><br/>
+		Geef optioneel op welke flow trigger je uit wilt voeren wanneer het event in werking gaat treden. Als je geen flow trigger opgeeft, is een nieuwe state verplicht.
+	</li>
+</ol>
+
+<h2>Kort voorbeeld</h2>
+<p>Stel je hebt een bewegingsmelder waarmee je het licht automatisch aan wilt doen. Maak de volgende flows:</p>
+<ol style="margin-left:15px;">
+	<li>Je bewegingsmelder gaat af in de linkerkolom van de flow editor. In de rechterkolom voer je de actie uit "Licht beweging aan".</li>
+	<li>De trigger "Doe licht aan" gaat af in de linkerkolom van de flow editor. In de rechterkolom schakel je je verlichting(en) in.</li>
+</ol>
+<p style="font-style:italic;font-size:0.9em;">Normaliter zou je dit uiteraard zonder State Control, en met &eacute;&eacute;n flow kunnen regelen. Dit gaat echter om een voorbeeld qua instellingen.</p>
+<p>Je hebt de volgende instellingen binnen State Control nodig:</p>
+<ol style="margin-left:15px;">
+	<li>Flow trigger: "Licht beweging aan"</li>
+	<li>Flow actie: "Doe licht aan"</li>
+	<li>States: "Licht uit" en "Licht beweging"</li>
+	<li>Event:
+		<ul style="margin-left:15px;">
+			<li>Event gebeurt wanneer: "Licht beweging aan"</li>
+			<li>Nieuwe state: "Licht beweging"</li>
+			<li>Trigger een flow: "Doe licht aan"</li>
+		</ul>
+	</li>
+</ol>
+<p>Zie voor een volledig voorbeeld m.b.t. verlichting <a href="https://github.com/SergeRegoor/nl.regoor.statecontrol/wiki" target="_blank">de wiki</a>.</p>
+
+<h2>Wel of geen events in je flows?</h2>
+<p>
+	Om events te kunnen gebruiken binnen een groep, moet je bij de groep instellingen het vinkje "Gebruik van events in flow cards toestaan" instellen.<br/>
+	Voor groepen met states zonder verdere logica, kun je het vinkje beter uitzetten (je kunt dan geen events beheren voor die groep, en voor die groep ook geen trigger-
+	en actie- flow cards gebruiken).
+</p>
+
+<h2>Meer informatie</h2>
+<p>
+	Voor verdere uitleg en voorbeelden, bezoek <a href="https://github.com/SergeRegoor/nl.regoor.statecontrol/wiki" target="_blank">de wiki van de State Control app</a>.
+</p>

@@ -1,0 +1,89 @@
+<h2>How does State Control work?</h2>
+<p>
+	A section (which can represent a room) can be assigned a "state", for example "The lights are off" or "The lights are on due to movement". State changes, states as
+	a condition or changing a state can be done using flow cards in the flow editor.
+	Please note: states, events, flow actions and flow triggers always function <em>for every section</em>, so they are universally usable for all sections of the respective group.
+</p>
+
+<h2>Flow actions</h2>
+<p>
+	Use a flow action to be able to use in your flow as "action that needs to be executed". You can execute the flow action in the right column of the flow editor.<br/>
+	Every time you have a flow action executed, the app will check which events are applicable to fire. The flow action itself does nothing: you will need to
+	create an event to determine what needs to be done for that flow.
+</p>
+
+<h2>Flow triggers</h2>
+<p>
+	Use a flow trigger to be able to specify in your event when a follow-up needs to take place, after a flow card has been executed. You use flow triggers in the
+	left column of the flow editor.
+</p>
+
+<h2>Events</h2>
+<p>
+	You use an event to put together flow actions and triggers. When an action is executed from a flow card in the right column of the flow editor, an event can be fired.
+	An event can change a state, but also execute a flow trigger. If a flow trigger is executed by an event, the flows will be triggered which contain a flow card in the
+	left column for the respective trigger.
+</p>
+
+<h2>Settings for an event</h2>
+<ol style="margin-left:15px;">
+	<li>
+		<strong>This event happens when</strong><br/>
+		This setting determines when the event will be fired. You specify a flow action, which you execute in the right column of the flow editor.
+	</li>
+	<li>
+		<strong>Delay in seconds</strong> <em>(optional)</em><br/>
+		If your event must be fired with a delay, you can enter the delay in seconds. Please note, the delay is applicable to both the setting of a new state, and the execution of a flow trigger.
+	</li>
+	<li>
+		<strong>State must be</strong> <em>(optional)</em><br/>
+		If the event must only be fired when a certain state is active. You can remove the checkbox if the event should fire when the state should <em>not</em> be active.
+	</li>
+	<li>
+		<strong>New state</strong><br/>
+		Optionally supply the state which should be applied when the event fires. If you do not specify a new state, a flow trigger is mandatory.
+	</li>
+	<li>
+		<strong>Set state regardless of priority</strong><br/>
+		If you apply a new state, the new state will normally respect the priority of the active state. So if the current state has priority and the new state does not, the new state will <em>not</em> be applied.
+		Use this setting to apply the new state regardless of the priority.
+	</li>
+	<li>
+		<strong>Trigger a flow</strong><br/>
+		Optionally specify which flow trigger should be executed when the event fires. If you do not specify a flow trigger, a new state is mandatory.
+	</li>
+</ol>
+
+<h2>Short example</h2>
+<p>Image you have a motion sensor which you want to use to automatically switch on your lights. Make the following flows:</p>
+<ol style="margin-left:15px;">
+	<li>Your motion sensor detects motion in the left column of the flow editor. In the right column you execute the action "Light movement on".</li>
+	<li>The trigger "Switch on lights" goes off in the left column of the flow editor. In the right column you switch on your lights.</li>
+</ol>
+<p style="font-style:italic;font-size:0.9em;">Normally you would obviously do this without State Control, and with only a single flow. This is just an example to show you the settings needed.</p>
+<p>You will need the following settings in State Control:</p>
+<ol style="margin-left:15px;">
+	<li>Flow trigger: "Light movement on"</li>
+	<li>Flow action: "Switch on lights"</li>
+	<li>States: "Lights off" and "Lights movement"</li>
+	<li>Event:
+		<ul style="margin-left:15px;">
+			<li>This event happens when: "Light movement on"</li>
+			<li>New state: "Lights movement"</li>
+			<li>Trigger a flow: "Switch on lights"</li>
+		</ul>
+	</li>
+</ol>
+<p>For a full example to use for lighting see <a href="https://github.com/SergeRegoor/nl.regoor.statecontrol/wiki" target="_blank">the wiki</a>.</p>
+
+<h2>Events in your flows: yes or no?</h2>
+<p>
+	To be able to use events within a group, you need to apply the checkbox "Enable events in flow cards" in the group settings.<br/>
+	For groups with states without any further logic, you can better remove the checkbo  (you can then no longer edit events for that group, and cannot use
+	trigger- and action- flow cards).
+</p>
+
+<h2>More information</h2>
+<p>
+	For further documentation and examples, visit <a href="https://github.com/SergeRegoor/nl.regoor.statecontrol/wiki" target="_blank">the wiki of the State Control app</a>.
+</p>

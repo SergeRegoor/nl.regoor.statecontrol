@@ -6,6 +6,8 @@ If you would like to use the icons (US$ 1 each), please respect the icon creator
 
 button { width:auto; font-size:14px; padding:5px 10px; border-radius:4px; border:1px solid #bbbbbb; cursor:pointer; }
 p, .view-content p { font-size:14px; }
+a { color:#333; text-decoration:underline; }
+a:hover { color:#333; text-decoration:none; }
 ol li, ul li, .view-content ol li, .view-content ul li { margin:0 0 6px 14px; font-size:14px; }
 .bottomButtonBar { position:absolute; bottom:0; right:0; width:100%; }
 .bottomButtonBar button.floatLeft { margin-right:15px; }
@@ -16,11 +18,13 @@ fieldset legend { font-size:14px !important; color:#333 !important; font-weight:
 .floatLeft { float:left; }
 .floatRight { float:right; }
 .tip { font-style:italic; font-size:0.9em; }
+.hasPriorityState:after { content:'prio'; display:inline-block; color:red; margin:0 0 0 6px; font-size:0.65em; }
 
 .field.row { position:relative; }
-.field.row label { width:calc(100% - 40px) !important; }
+.field.row label { width:calc(100% - 25px) !important; }
+.field.row label.withTooltip { width:calc(100% - 40px) !important; }
 .field.row input[type="text"] { width:calc(100% - 2px - 1.5em) !important; }
-.field.row input[type="checkbox"] { width:auto !important; }
+.field.row input[type="checkbox"], .field.row input[type="radio"] { width:auto !important; }
 .field.row .infoTooltip { cursor:pointer; display:inline-block; width:14px; height:14px; margin:3px 10px 0 0; font-size:12px; border-radius:7px; background:#00a3ff; color:#fff; text-align:center; font-weight:bold; line-height:15px; }
 
 .listRow.head { width:calc(100% - 2px); margin:0; border-top:1px solid #dddddd; border-left:1px solid #dddddd; border-right:1px solid #dddddd; background:#f5f5f5; font-weight:bold;  }
@@ -40,42 +44,51 @@ fieldset legend { font-size:14px !important; color:#333 !important; font-weight:
 .list .row .col.w30 { width:calc(30% - 8px); }
 .list .row .col.w40 { width:calc(40% - 8px); }
 .list .row .col button { margin:0 0 0 10px; font-size:11px; padding:0 4px; line-height:20px; height:auto; }
+.list .row .col ul { padding:0 !important; margin:0 !important; }
+.list .row .col ul li { padding:0 !important; margin:0 !important; font-size:12px !important; line-height:14px !important; }
 
-.lister[rel-listtype="stateGroups"] .col:nth-child(1) { width:calc(33px - 8px); }
-.lister[rel-listtype="stateGroups"] .col:nth-child(2) { width:calc(33px - 8px); }
-.lister[rel-listtype="stateGroups"] .col:nth-child(3) { width:calc(47px - 8px); }
-.lister[rel-listtype="stateGroups"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.9) - 8px); }
+.lister[rel-listtype="stateOverview"] .col:nth-child(1) { width:calc(((100% - 113px) * 0.3) - 8px); }
+.lister[rel-listtype="stateOverview"] .col:nth-child(2) { width:calc(((100% - 113px) * 0.08) - 8px); }
+.lister[rel-listtype="stateOverview"] .col:nth-child(3) { width:calc(((100% - 113px) * 0.3) - 8px); }
+.lister[rel-listtype="stateOverview"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.3) - 8px); }
 
-.lister[rel-listtype="rooms"] .col:nth-child(1) { width:calc(33px - 8px); }
-.lister[rel-listtype="rooms"] .col:nth-child(2) { width:calc(33px - 8px); }
-.lister[rel-listtype="rooms"] .col:nth-child(3) { width:calc(47px - 8px); }
-.lister[rel-listtype="rooms"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.45) - 8px); }
-.lister[rel-listtype="rooms"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.1) - 8px); }
-.lister[rel-listtype="rooms"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.45) - 8px); }
+
+.lister[rel-listtype="groups"] .col:nth-child(1) { width:calc(33px - 8px); }
+.lister[rel-listtype="groups"] .col:nth-child(2) { width:calc(33px - 8px); }
+.lister[rel-listtype="groups"] .col:nth-child(3) { width:calc(47px - 8px); }
+.lister[rel-listtype="groups"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.4) - 8px); }
+.lister[rel-listtype="groups"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.29) - 8px); }
+.lister[rel-listtype="groups"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.29) - 8px); }
+
+.lister[rel-listtype="sections"] .col:nth-child(1) { width:calc(33px - 8px); }
+.lister[rel-listtype="sections"] .col:nth-child(2) { width:calc(33px - 8px); }
+.lister[rel-listtype="sections"] .col:nth-child(3) { width:calc(47px - 8px); }
+.lister[rel-listtype="sections"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.49) - 8px); }
+.lister[rel-listtype="sections"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.49) - 8px); }
 
 .lister[rel-listtype="states"] .col:nth-child(1) { width:calc(33px - 8px); }
 .lister[rel-listtype="states"] .col:nth-child(2) { width:calc(33px - 8px); }
 .lister[rel-listtype="states"] .col:nth-child(3) { width:calc(47px - 8px); }
-.lister[rel-listtype="states"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.45) - 8px); }
-.lister[rel-listtype="states"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.1) - 8px); }
-.lister[rel-listtype="states"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.1) - 8px); }
+.lister[rel-listtype="states"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.49) - 8px); }
+.lister[rel-listtype="states"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.49) - 8px); }
 
-.lister[rel-listtype="actions"] .col:nth-child(1) { width:calc(33px - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(2) { width:calc(33px - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(3) { width:calc(47px - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.4) - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.1) - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.15) - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(7) { width:calc(((100% - 113px) * 0.15) - 8px); }
-.lister[rel-listtype="actions"] .col:nth-child(8) { width:calc(((100% - 113px) * 0.2) - 8px); }
+.lister[rel-listtype="flowTriggers"] .col:nth-child(1) { width:calc(33px - 8px); }
+.lister[rel-listtype="flowTriggers"] .col:nth-child(2) { width:calc(33px - 8px); }
+.lister[rel-listtype="flowTriggers"] .col:nth-child(3) { width:calc(47px - 8px); }
+.lister[rel-listtype="flowTriggers"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.9) - 8px); }
 
-.lister[rel-listtype="followUps"] .col:nth-child(1) { width:calc(33px - 8px); }
-.lister[rel-listtype="followUps"] .col:nth-child(2) { width:calc(33px - 8px); }
-.lister[rel-listtype="followUps"] .col:nth-child(3) { width:calc(47px - 8px); }
-.lister[rel-listtype="followUps"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.13) - 8px); }
-.lister[rel-listtype="followUps"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.17) - 8px); }
-.lister[rel-listtype="followUps"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.35) - 8px); }
-.lister[rel-listtype="followUps"] .col:nth-child(7) { width:calc(((100% - 113px) * 0.35) - 8px); }
+.lister[rel-listtype="flowActions"] .col:nth-child(1) { width:calc(33px - 8px); }
+.lister[rel-listtype="flowActions"] .col:nth-child(2) { width:calc(33px - 8px); }
+.lister[rel-listtype="flowActions"] .col:nth-child(3) { width:calc(47px - 8px); }
+.lister[rel-listtype="flowActions"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.9) - 8px); }
+
+.lister[rel-listtype="events"] .col:nth-child(1) { width:calc(33px - 8px); }
+.lister[rel-listtype="events"] .col:nth-child(2) { width:calc(33px - 8px); }
+.lister[rel-listtype="events"] .col:nth-child(3) { width:calc(47px - 8px); }
+.lister[rel-listtype="events"] .col:nth-child(4) { width:calc(((100% - 113px) * 0.30) - 8px); }
+.lister[rel-listtype="events"] .col:nth-child(5) { width:calc(((100% - 113px) * 0.09) - 8px); }
+.lister[rel-listtype="events"] .col:nth-child(6) { width:calc(((100% - 113px) * 0.30) - 8px); }
+.lister[rel-listtype="events"] .col:nth-child(7) { width:calc(((100% - 113px) * 0.30) - 8px); }
 
 .columnContainer { width:100%; }
 .columnContainer .col { display:inline-block; }

@@ -1,4 +1,6 @@
 {
+	"explanationUrl": "../assets/explanation-nl.html",
+	
 	"boolean": {
 		"yes": "Ja",
 		"no": "Nee"
@@ -7,8 +9,27 @@
 	"close": "Sluiten",
 	
 	"tab": {
-		"settings": {
-			"title": "Instellingen"
+		"stateOverview": {
+			"title": "State overzicht"
+		},
+		"groups": {
+			"title": "Groepen"
+		},
+		"sections": {
+			"title": "Secties",
+			"sectionsFor": "Secties voor "
+		},
+		"states": {
+			"title": "States",
+			"statesFor": "States voor "
+		},
+		"group": {
+			"eventsFor": "Events voor ",
+			"flowTriggersFor": "Flow triggers voor ",
+			"flowActionsFor": "Flow acties voor "
+		},
+		"explanation": {
+			"title": "Uitleg"
 		}
 	},
 	
@@ -17,23 +38,30 @@
 		"deleteButton": "Verwijder",
 		"moveButton": "Slepen om te verplaatsen",
 		
-		"stateGroups": {
+		"stateOverview": {
+			"title": "State overzicht",
+			"group": "Groep",
+			"section": "Sectie",
+			"currentState": "Huidige state"
+		},
+		
+		"groups": {
 			"title": "Groepen",
-			"explanation": "",
+			"explanation": "Je gebruikt groepen om je states mee in te delen, zodat je meerdere soorten states kunt gebruiken.",
 			"addButton": "Toevoegen",
 			"description": "Omschrijving",
+			"enableFlows": "Gebruik in flows",
 			"confirmDelete": "Weet je zeker dat je de groep \"[description]\" wilt verwijderen?",
 			"inUse": {
 				"error": "De groep is nog in gebruik"
 			}
 		},
-		"rooms": {
+		"sections": {
 			"title": "Secties",
-			"explanation": "",
+			"explanation": "Secties gebruik je om je states aan toe te kennen, zoals bijvoorbeeld kamers.",
 			"addButton": "Toevoegen",
 			"description": "Omschrijving",
-			"isActive": "Actief",
-			"currentState": "Current state",
+			"currentState": "Huidige state",
 			"confirmDelete": "Weet je zeker dat je de sectie \"[description]\" wilt verwijderen?",
 			"inUse": {
 				"one": "een sectie",
@@ -42,46 +70,63 @@
 		},
 		"states": {
 			"title": "States",
-			"explanation": "",
+			"explanation": "States zijn de waarden die je toekent aan je secties. Bijvoorbeeld 'Licht aan' of 'Licht uit' in het geval van kamers.",
 			"addButton": "Toevoegen",
 			"description": "Omschrijving",
-			"isActive": "Actief",
-			"isOverruling": "Prioriteit",
-			"confirmDelete": "Weet je zeker dat je de staat \"[description]\" wilt verwijderen?",
+			"hasPriority": "Heeft prioriteit",
+			"confirmDelete": "Weet je zeker dat je de state \"[description]\" wilt verwijderen?",
+			"noStates": "Er zijn nog geen states",
+			"hasNoState": "Geen state toegekend.",
 			"inUse": {
-				"error": "The staat is nog in gebruik",
-				"one": "een staat",
-				"multiple": "[quantity] staten"
+				"error": "De state is nog in gebruik",
+				"one": "een state",
+				"multiple": "[quantity] states"
 			}
 		},
-		"actions": {
-			"title": "Actions",
-			"explanation": "",
+		"flowTriggers": {
+			"title": "Flow triggers",
+			"explanation": "Flow triggers zijn de handelingen waar je op wilt kunnen triggeren in de Homey flow editor (linkerkolom). Je kunt deze als flow cards laten 'triggeren' in een event nadat een flow actie heeft plaatsgevonden.",
 			"addButton": "Toevoegen",
 			"description": "Omschrijving",
-			"isActive": "Actief",
-			"isTriggerable": "Triggerable",
-			"isPerformable": "Performable",
-			"nrOfFollowUps": "# Opvolgingen",
-			"confirmDelete": "Weet je zeker dat je de actie \"[description]\" wilt verwijderen?",
+			"confirmDelete": "Weet je zeker dat je de flow trigger \"[description]\" wilt verwijderen?",
 			"inUse": {
-				"error": "De actie is nog in gebruik",
+				"error": "De flow trigger is nog in gebruik",
 				"one": "een actie",
 				"multiple": "[quantity] acties"
 			}
 		},
-		"followUps": {
-			"title": "Follow-ups",
-			"explanation": "",
+		"flowActions": {
+			"title": "Flow acties",
+			"explanation": "Flow acties voer je uit in de Homey flow editor (rechterkolom). Je kunt deze acties onderscheppen door events te gebruiken.",
 			"addButton": "Toevoegen",
-			"isActive": "Actief",
-			"delaySeconds": "Vertraging",
-			"newState": "Opvolgende staat",
-			"newAction": "Opvolgende actie",
-			"confirmDelete": "Weet je zeker dat je deze opvolging wilt verwijderen?",
+			"description": "Omschrijving",
+			"confirmDelete": "Weet je zeker dat je de flow actie \"[description]\" wilt verwijderen?",
 			"inUse": {
-				"one": "een opvolging",
-				"multiple": "[quantity] opvolgingen"
+				"error": "De flow actie is nog in gebruik",
+				"one": "een actie",
+				"multiple": "[quantity] acties"
+			}
+		},
+		"events": {
+			"title": "Events",
+			"explanation": "Events zijn daar waar 'the magic happens', en waar je bepaalt bij welke actie flow cards iets gedaan moet worden, zoals het toekennen van een state, of het triggeren van een andere flow card.",
+			"addButton": "Toevoegen",
+			"eventType": "Event",
+			"delaySeconds": "Vertr.",
+			"conditionType": "Vereiste",
+			"executionType": "Uitvoer",
+			"after": "Na",
+			"if": "Als",
+			"ifNot": "Als niet",
+			"always": "Altijd",
+			"set": "Zet state",
+			"trigger": "Trigger",
+			"execute": "Voer uit ",
+			"cannotAdd": "Je kunt pas events toevoegen, nadat je minimaal 1 flow actie hebt toegevoegd.",
+			"confirmDelete": "Weet je zeker dat je dit event wilt verwijderen?",
+			"inUse": {
+				"one": "een event",
+				"multiple": "[quantity] events"
 			}
 		}
 	},
@@ -92,45 +137,49 @@
 		
 		"error": {
 			"isMandatory": "[field] is verplicht.",
-			"isNotPositiveNumber": "[field] moet een positief getal zijn."
+			"isNotPositiveNumber": "[field] moet een positief getal zijn.",
+			"noFlowToTriggerEvent": "Je hebt geen flow actie gekozen om dit event op te triggeren.",
+			"eventStateOrTrigger": "Je moet een nieuwe state en/of flow card trigger selecteren."
 		},
 		
-		"stateGroup": {
-			"description" : "Omschrijving"
-		},
-		
-		"room": {
+		"group": {
 			"description" : "Omschrijving",
-			"isActive": "Actief",
-			"currentState": "Huidige staat",
-			"newState": "Nieuwe staat",
-			"newStateInfo": "Wanneer je de staat van de sectie handmatig gaat wijzigen, kan de \"State change\" flow card aangeroepen worden in je flows (indien van toepassing)."
+			"enableFlows": "Gebruik van events in flow cards toestaan (triggers & acties)"
+		},
+		
+		"section": {
+			"description" : "Omschrijving",
+			"currentState": "Huidige state",
+			"newState": "Nieuwe state",
+			"newStateInfo": "Wanneer je de state van de sectie handmatig gaat wijzigen, kan de \"State change\" flow card aangeroepen worden in je flows (indien van toepassing)."
 		},
 		
 		"state": {
 			"description" : "Omschrijving",
-			"isActive": "Actief",
-			"isOverruling": "Prioriteit",
-			"isOverrulingInfo": "Wanneer aangevinkt, kunnen andere staten deze staat niet overschrijven, tenzij de andere staat ook prioriteit heeft."
+			"hasPriority": "Heeft prioriteit",
+			"hasPriorityInfo": "Wanneer aangevinkt, kunnen andere states deze state niet overschrijven, tenzij de andere state ook prioriteit heeft."
 		},
 		
-		"action": {
-			"description" : "Omschrijving",
-			"isActive": "Actief",
-			"isTriggerable": "Kan getriggered worden in flows",
-			"isTriggerableInfo": "Indien aangevinkt, kan de actie worden gebruikt in flow cards in de linker kolom als trigger.",
-			"isPerformable": "Kan uitgevoerd worden in flows",
-			"isPerformableInfo": "Indien aangevinkt, kan de actie worden gebruikt in flow cards in de rechter kolom als uit te voeren handeling."
+		"flowTrigger": {
+			"description" : "Omschrijving"
 		},
 		
-		"followUp": {
-			"isActive": "Actief",
-			"doNotCheckOverruling": "Prioriteit van huidige staat niet respecteren",
-			"doNotCheckOverrulingInfo": "Normaal gesproken zal de opvolgende staat alleen worden ingesteld als deze prioriteit heeft, of als de huidige staat geen prioriteit is. Door deze optie aan te vinken, wordt de opvolgende staat sowieso ingesteld en is prioriteit niet van toepassing.",
+		"flowAction": {
+			"description" : "Omschrijving"
+		},
+		
+		"event": {
+			"eventAction": "Dit event gebeurt wanneer",
 			"delaySeconds": "Vertraging in seconden",
-			"nextState": "Opvolgende staat",
-			"nextAction": "Opvolgende actie",
-			"nextActionInfo": "De opvolgende actie wordt alleen uitgevoerd als de opvolgende staat kan worden ingesteld in relatie tot de prioriteit van de huidige staat. Als je geen opvolgende staat hebt opgegeven, wordt de opvolgende actie sowieso uitgevoerd."
+			"conditionState": "State moet onderstaande [niet] zijn",
+			"doTypeSetState": "State wijzigen",
+			"doType": "Wat moet er gedaan worden?",
+			"doTypeExecuteFlowTrigger": "Trigger",
+			"doTypeExecuteFlowAction": "Actie uitvoeren",
+			"setState": "Nieuwe state",
+			"canOverrideStatePriority": "Zet state ongeacht de prioriteit",
+			"executeFlowTrigger": "Trigger een flow",
+			"executeFlowAction": "Voer een actie uit"
 		}
 	}
 }

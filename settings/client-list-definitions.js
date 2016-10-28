@@ -1,64 +1,78 @@
 // Definition of list types
 var _listTypes = [
 	{
-		type: 'stateGroups',
-		title: {localText:'list.stateGroups.title'},
-		explanation: {localText:'list.stateGroups.explanation'},
-		addButton: {localText:'list.stateGroups.addButton'},
-		source: '_settings.stateGroups',
+		type: 'stateOverview',
+		title: {localText:'list.stateOverview.title'},
+		explanation: null,
+		addButton: null,
+		formType: 'section',
+		source: '_settings.sections',
+		columns: [
+			{ property:'groupId', title:{localText:'list.stateOverview.group'}, propertyType:'group' },
+			{ type:'setObject', title:'', onSetObject:function(cellObj, section){ cellObj.append($('<button/>').text('-').attr('title', __('list.editButton')).addClass('editButton').click(function(){ $('button[rel-id="'+section.id+'"].editButton').showForm(); })); } },
+			{ property:'description', title:{localText:'list.stateOverview.section'} },
+			{ type:'sectionState', title:{localText:'list.stateOverview.currentState'} }
+		],
+		filter: null
+	},
+	{
+		type: 'groups',
+		title: {localText:'list.groups.title'},
+		explanation: {localText:'list.groups.explanation'},
+		addButton: {localText:'list.groups.addButton'},
+		source: '_settings.groups',
 		columns: [
 			{ type:'move', title:'' },
 			{ type:'edit', title:'' },
 			{ type:'delete', title:'' },
-			{ property:'description', title:{localText:'list.stateGroups.description'} }
+			{ property:'description', title:{localText:'list.groups.description'} },
+			{ property:'enableFlows', title:{localText:'list.groups.enableFlows'}, propertyType:'boolean' }
 		],
 		filter: null,
-		formType: 'stateGroup',
-		deleteItem: function(masterParentId, parentId, stateGroup) {
-			var nrOfRooms = $.grep(_settings.rooms, function(room){ return room.stateGroupId == stateGroup.id; }).length;
-			var nrOfStates = $.grep(_settings.states, function(state){ return state.stateGroupId == stateGroup.id; }).length;
-			var nrOfActions = $.grep(_settings.actions, function(action){ return action.stateGroupId == stateGroup.id; }).length;
-			if ((nrOfRooms > 0) || (nrOfStates > 0) || (nrOfActions)) {
-				var errorMessage = __('list.stateGroups.inUse.error') + ' (';
-				if (nrOfRooms == 1) errorMessage += __('list.rooms.inUse.one'); else if (nrOfRooms > 1) errorMessage += __('list.rooms.inUse.multiple').replace('[quantity]', nrOfRooms);
-				if ((nrOfRooms >= 1) && (nrOfStates >= 1)) errorMessage += ', ';
-				if (nrOfStates == 1) errorMessage += __('list.states.inUse.one'); else if (nrOfStates > 1) errorMessage += __('list.states.inUse.multiple').replace('[quantity]', nrOfStates);
-				if (((nrOfRooms+nrOfStates) >= 1) && (nrOfActions >= 1)) errorMessage += ', ';
-				if (nrOfActions == 1) errorMessage += __('list.actions.inUse.one'); else if (nrOfActions > 1) errorMessage += __('list.actions.inUse.multiple').replace('[quantity]', nrOfActions);
-				errorMessage += ').';
-				alert(errorMessage);
+		formType: 'group',
+		deleteItem: function(masterParentId, parentId, group) {
+			var inUseMessage = '';
+			var nrOfSections = $.grep(_settings.sections, function(x){ return x.groupId == group.id; }).length;
+			var nrOfStates = $.grep(_settings.states, function(x){ return x.groupId == group.id; }).length;
+			var nrOfFlowTriggers = $.grep(_settings.flowTriggers, function(x){ return x.groupId == group.id; }).length;
+			var nrOfFlowActions = $.grep(_settings.flowActions, function(x){ return x.groupId == group.id; }).length;
+			var nrOfEvents = $.grep(_settings.events, function(x){ return x.groupId == group.id; }).length;
+			if (nrOfSections == 1) inUseMessage += ', ' + __('list.sections.inUse.one'); else if (nrOfSections > 1) inUseMessage += ', ' + __('list.sections.inUse.multiple').replace('[quantity]', nrOfSections);
+			if (nrOfStates == 1) inUseMessage += ', ' + __('list.states.inUse.one'); else if (nrOfStates > 1) inUseMessage += ', ' + __('list.states.inUse.multiple').replace('[quantity]', nrOfStates);
+			if (nrOfFlowTriggers == 1) inUseMessage += ', ' + __('list.flowTriggers.inUse.one'); else if (nrOfFlowTriggers > 1) inUseMessage += ', ' + __('list.flowTriggers.inUse.multiple').replace('[quantity]', nrOfFlowTriggers);
+			if (nrOfFlowActions == 1) inUseMessage += ', ' + __('list.flowActions.inUse.one'); else if (nrOfFlowActions > 1) inUseMessage += ', ' + __('list.flowActions.inUse.multiple').replace('[quantity]', nrOfFlowActions);
+			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
+			if (inUseMessage.length > 2) {
+				alert(__('list.groups.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
 				return false;
 			}
-			if (!confirm(__('list.stateGroups.confirmDelete').replace('[description]',stateGroup.description))) return false;
-			_settings.stateGroups = $.grep(_settings.stateGroups, function(item){ return item.id != stateGroup.id; });
+			if (!confirm(__('list.groups.confirmDelete').replace('[description]',group.description))) return false;
+			_settings.groups = $.grep(_settings.groups, function(item){ return item.id != group.id; });
 			saveSettings();
-			initializeTabs();
 			$('.tabControl').invalidateTabs();
-			$('.list[rel-listtype="stateGroups"]').renderList();
 			return true;
 		}
 	},
 	{
-		type: 'rooms',
-		title: {localText: 'list.rooms.title'},
-		explanation: {localText:'list.rooms.explanation'},
-		addButton: {localText:'list.rooms.addButton'},
-		source: '_settings.rooms',
+		type: 'sections',
+		title: {localText: 'list.sections.title'},
+		explanation: {localText:'list.sections.explanation'},
+		addButton: {localText:'list.sections.addButton'},
+		source: '_settings.sections',
 		columns: [
 			{ type:'move', title:'' },
 			{ type:'edit', title:'' },
 			{ type:'delete', title:'' },
-			{ property:'description', title:{localText:'list.rooms.description'} },
-			{ property:'isActive', title:{localText:'list.rooms.isActive'}, propertyType:'boolean' },
-			{ type:'roomState', title:{localText:'list.rooms.currentState'} }
+			{ property:'description', title:{localText:'list.sections.description'} },
+			{ type:'sectionState', title:{localText:'list.sections.currentState'} }
 		],
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		formType: 'room',
-		deleteItem: function(masterParentId, parentId, room) {
-			if (!confirm(__('list.rooms.confirmDelete').replace('[description]',room.description))) return false;
-			_settings.rooms = $.grep(_settings.rooms, function(item){ return item.id != room.id; });
+		filter: { property:'groupId', compareTo:'parentId' },
+		formType: 'section',
+		deleteItem: function(masterParentId, parentId, section) {
+			if (!confirm(__('list.sections.confirmDelete').replace('[description]',section.description))) return false;
+			_settings.sections = $.grep(_settings.sections, function(item){ return item.id != section.id; });
 			saveSettings();
-			$('.list[rel-listtype="rooms"][rel-parentid="'+room.stateGroupId+'"]').renderList();
+			$('.tabControl').invalidateTabs();
 			return true;
 		}
 	},
@@ -73,113 +87,143 @@ var _listTypes = [
 			{ type:'edit', title:'' },
 			{ type:'delete', title:'' },
 			{ property:'description', title:{localText:'list.states.description'} },
-			{ property:'isActive', title:{localText:'list.states.isActive'}, propertyType:'boolean' },
-			{ property:'isOverruling', title:{localText:'list.states.isOverruling'}, propertyType:'boolean' }
+			{ property:'hasPriority', title:{localText:'list.states.hasPriority'}, propertyType:'boolean' }
 		],
-		filter: { property:'stateGroupId', compareTo:'parentId' },
+		filter: { property:'groupId', compareTo:'parentId' },
 		formType: 'state',
 		deleteItem: function(masterParentId, parentId, state, callback) {
-			function performDelete(nrOfRoomsInUse) {
-				var nrOfFollowUps = 0;
-				$.each(_settings.actions, function(i, action){
-					nrOfFollowUps += $.grep(action.followUps, function(followUp){ return followUp.stateId == state.id; }).length;
-				});
-				if ((nrOfRoomsInUse > 0) || (nrOfFollowUps > 0)) {
-					var errorMessage = __('list.states.inUse.error') + ' (';
-					if (nrOfRoomsInUse == 1) errorMessage += __('list.rooms.inUse.one'); else if (nrOfRoomsInUse > 1) errorMessage += __('list.rooms.inUse.multiple').replace('[quantity]', nrOfRoomsInUse);
-					if ((nrOfRoomsInUse > 0) && (nrOfFollowUps > 0)) errorMessage += ', ';
-					if (nrOfFollowUps == 1) errorMessage += __('list.followUps.inUse.one'); else if (nrOfFollowUps > 1) errorMessage += __('list.followUps.inUse.multiple').replace('[quantity]', nrOfFollowUps);
-					errorMessage += ').';
-					alert(errorMessage);
-					if (callback != null)
-						callback(false);
-					return;
-				}
-				if (!confirm(__('list.states.confirmDelete').replace('[description]',state.description))) return false;
-				_settings.states = $.grep(_settings.states, function(item){ return item.id != state.id; });
-				saveSettings();
-				$('.list[rel-listtype="states"][rel-parentid="'+state.stateGroupId+'"]').renderList();
-				if (callback != null)
-					callback(true);
-			}
-			
-			var nrOfRoomsToCheckForState = _settings.rooms.length;
-			var nrOfRoomsCheckedForState = 0;
-			var nrOfRoomsInUse = 0;
-			$.each(_settings.rooms, function(i, room){
-				getRoomState(room.id, function(roomState){
-					nrOfRoomsCheckedForState++;
-					if (roomState.id == state.id)
-						nrOfRoomsInUse++;
-					if (nrOfRoomsCheckedForState >= nrOfRoomsToCheckForState)
-						performDelete(nrOfRoomsInUse);
-				});
+			var nrOfSections = 0;
+			$.each(_settings.sections, function(i, section){
+				var sectionState = findObjInArray(_sectionStates, 'sectionId', section.id);
+				if ((sectionState != null) && (sectionState.stateId == state.id))
+					nrOfSections++;
 			});
-		}
-	},
-	{
-		type: 'actions',
-		title: {localText: 'list.actions.title'},
-		explanation: {localText:'list.actions.explanation'},
-		addButton: {localText:'list.actions.addButton'},
-		source: '_settings.actions',
-		columns: [
-			{ type:'move', title:'' },
-			{ type:'edit', title:'' },
-			{ type:'delete', title:'' },
-			{ property:'description', title:{localText:'list.actions.description'} },
-			{ property:'isActive', title:{localText:'list.actions.isActive'}, propertyType:'boolean' },
-			{ property:'isTriggerable', title:{localText:'list.actions.isTriggerable'}, propertyType:'boolean' },
-			{ property:'isPerformable', title:{localText:'list.actions.isPerformable'}, propertyType:'boolean' },
-			{ property:'followUps', title:{localText:'list.actions.nrOfFollowUps'}, propertyType:'array' }
-		],
-		filter: { property:'stateGroupId', compareTo:'parentId' },
-		formType: 'action',
-		deleteItem: function(masterParentId, parentId, action) {
-			var nrOfFollowUps = 0;
-			$.each(_settings.actions, function(i, act){
-				nrOfFollowUps += $.grep(act.followUps, function(followUp){ return followUp.actionId == action.id; }).length;
-			});
-			if (nrOfFollowUps > 0) {
-				var errorMessage = __('list.actions.inUse.error') + ' (';
-				if (nrOfFollowUps == 1) errorMessage += __('list.followUps.inUse.one'); else if (nrOfFollowUps > 1) errorMessage += __('list.followUps.inUse.multiple').replace('[quantity]', nrOfFollowUps);
-				errorMessage += ').';
-				alert(errorMessage);
+				
+			var inUseMessage = '';
+			var nrOfEvents = $.grep(_settings.events, function(x){ return (x.conditionStateId == state.id) || (x.setStateId == state.id); }).length;
+			if (nrOfSections == 1) inUseMessage += ', ' + __('list.sections.inUse.one'); else if (nrOfSections > 1) inUseMessage += ', ' + __('list.sections.inUse.multiple').replace('[quantity]', nrOfSections);
+			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
+			if (inUseMessage.length > 2) {
+				alert(__('list.states.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
 				return false;
 			}
-			if (!confirm(__('list.actions.confirmDelete').replace('[description]',action.description))) return false;
-			_settings.actions = $.grep(_settings.actions, function(item){ return item.id != action.id; });
+			if (!confirm(__('list.states.confirmDelete').replace('[description]',state.description))) return false;
+			_settings.states = $.grep(_settings.states, function(item){ return item.id != state.id; });
 			saveSettings();
-			$('.list[rel-listtype="actions"][rel-parentid="'+action.stateGroupId+'"]').renderList();
+			$('.tabControl').invalidateTabs();
 			return true;
 		}
 	},
 	{
-		type: 'followUps',
-		title: {localText: 'list.followUps.title'},
-		explanation: {localText:'list.followUps.explanation'},
-		addButton: {localText:'list.followUps.addButton'},
-		source: 'getActionById(parentId).followUps',
+		type: 'flowTriggers',
+		title: {localText: 'list.flowTriggers.title'},
+		explanation: {localText:'list.flowTriggers.explanation'},
+		addButton: {localText:'list.flowTriggers.addButton'},
+		source: '_settings.flowTriggers',
 		columns: [
 			{ type:'move', title:'' },
 			{ type:'edit', title:'' },
 			{ type:'delete', title:'' },
-			{ property:'isActive', title:{localText:'list.followUps.isActive'}, propertyType:'boolean' },
-			{ property:'delaySeconds', title:{localText:'list.followUps.delaySeconds'} },
-			{ property:'stateId', title:{localText:'list.followUps.newState'}, propertyType:'state' },
-			{ property:'actionId', title:{localText:'list.followUps.newAction'}, propertyType:'action' }
+			{ property:'description', title:{localText:'list.flowTriggers.description'} }
 		],
-		filter: null,
-		formType: 'followUp',
-		deleteItem: function(stateGroupId, actionId, followUp) {
-			if (!confirm(__('list.followUps.confirmDelete'))) return false;
-			var action = findObjInArray(_settings.actions, 'id', actionId);
-			if (action == null) return false;
-			action.followUps = $.grep(action.followUps, function(item){ return item.id != followUp.id; });
+		filter: { property:'groupId', compareTo:'parentId' },
+		formType: 'flowTrigger',
+		deleteItem: function(masterParentId, parentId, flowTrigger) {
+			var inUseMessage = '';
+			var nrOfEvents = $.grep(_settings.events, function(x){ return x.executeFlowTriggerId == flowTrigger.id; }).length;
+			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
+			if (inUseMessage.length > 2) {
+				alert(__('list.flowTriggers.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
+				return false;
+			}
+			if (!confirm(__('list.flowTriggers.confirmDelete').replace('[description]',flowTrigger.description))) return false;
+			_settings.flowTriggers = $.grep(_settings.flowTriggers, function(item){ return item.id != flowTrigger.id; });
 			saveSettings();
-			$('.list[rel-listtype="followUps"][rel-masterparentid="'+stateGroupId+'"][rel-parentid="'+actionId+'"]').renderList();
+			$('.tabControl').invalidateTabs();
 			return true;
+		}
+	},
+	{
+		type: 'flowActions',
+		title: {localText: 'list.flowActions.title'},
+		explanation: {localText:'list.flowActions.explanation'},
+		addButton: {localText:'list.flowActions.addButton'},
+		source: '_settings.flowActions',
+		columns: [
+			{ type:'move', title:'' },
+			{ type:'edit', title:'' },
+			{ type:'delete', title:'' },
+			{ property:'description', title:{localText:'list.flowActions.description'} }
+		],
+		filter: { property:'groupId', compareTo:'parentId' },
+		formType: 'flowAction',
+		deleteItem: function(masterParentId, parentId, flowAction) {
+			var inUseMessage = '';
+			var nrOfEvents = $.grep(_settings.events, function(x){ return x.eventActionId == flowAction.id; }).length;
+			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
+			if (inUseMessage.length > 2) {
+				alert(__('list.flowActions.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
+				return false;
+			}
+			if (!confirm(__('list.flowActions.confirmDelete').replace('[description]',flowAction.description))) return false;
+			_settings.flowActions = $.grep(_settings.flowActions, function(item){ return item.id != flowAction.id; });
+			saveSettings();
+			$('.tabControl').invalidateTabs();
+			return true;
+		}
+	},
+	{
+		type: 'events',
+		title: {localText: 'list.events.title'},
+		explanation: {localText: 'list.events.explanation'},
+		addButton: {localText: 'list.events.addButton'},
+		source: '_settings.events',
+		columns: [
+			{ type:'move', title:'' },
+			{ type:'edit', title:'' },
+			{ type:'delete', title:'' },
+			{ type:'getValue', title:{localText:'list.events.eventType'}, onGetValue:function(event) {
+				var flowAction = findObjInArray(_settings.flowActions, 'id', event.eventActionId);
+				if (flowAction != null) return __('list.events.after') + ' ' + flowAction.description; else return '';
+			} },
+			{ property:'delaySeconds', title:{localText:'list.events.delaySeconds'}, cellPostfix:' s' },
+			{ type:'getValue', title:{localText:'list.events.conditionType'}, onGetValue:function(event) {
+				var conditionState = findObjInArray(_settings.states, 'id', event.conditionStateId);
+				if ((conditionState != null) && event.conditionIsEqual) return __('list.events.if') + ' ' + conditionState.description;
+				if ((conditionState != null) && !event.conditionIsEqual) return __('list.events.ifNot') + ' ' + conditionState.description;
+				return __('list.events.always');
+			} },
+			{ type:'getValue', title:{localText:'list.events.executionType'}, onGetValue:function(event) {
+				var executionDescription = '<ul>';
+				
+				var setState = findObjInArray(_settings.states, 'id', event.setStateId);
+				if (setState != null) 
+					executionDescription += '<li>' + __('list.events.set') + ' ' + setState.description + (event.canOverrideStatePriority ? ' *' : '') + '</li>';
+				
+				var flowTrigger = findObjInArray(_settings.flowTriggers, 'id', event.executeFlowTriggerId);
+				if (flowTrigger != null)
+					executionDescription += '<li>' + __('list.events.trigger') + ' ' + flowTrigger.description + '</li>';
+				
+				return executionDescription + '</ul>';
+			} },
+		],
+		filter: { property:'groupId', compareTo:'parentId' },
+		formType: 'event',
+		onAdd: function(groupId) {
+			var nrOfFlowActions = $.grep(_settings.flowActions, function(x){ return x.groupId == groupId; }).length;
+			if (nrOfFlowActions == 0) {
+				alert(__('list.events.cannotAdd'));
+				return false;
+			}
+			return true;
+		},
+		deleteItem: function(masterParentId, parentId, event) {
+			if (!confirm(__('list.events.confirmDelete').replace('[description]',event.description))) return false;
+			_settings.events = $.grep(_settings.events, function(item){ return item.id != event.id; });
+			saveSettings();
+			$('.tabControl').invalidateTabs();
+			return true;
+
 		}
 	}
 ];
-

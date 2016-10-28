@@ -1,6 +1,6 @@
 {
     "id": "nl.regoor.statecontrol",
-    "version": "0.0.1",
+    "version": "0.2.1",
     "compatibility": "0.x || 1.x",
    	"name": {
         "nl": "State Control",
@@ -24,47 +24,66 @@
 	{
 		"triggers": [
 			{
-				"id": "request_action",
+				"id": "flow_trigger",
 				"title":
 				{
-					"nl": "Actie wordt uitgevoerd",
-					"en": "Action is performed"
+					"nl": "Trigger",
+					"en": "Trigger"
 				},
 				"fluidArgs": true,
 				"args": [
 					{
-						"name": "state_group",
+						"name": "group",
 						"type": "autocomplete"
 					},
 					{
-						"name": "room",
+						"name": "section",
 						"type": "autocomplete"
 					},
 					{
-						"name": "requested_action",
+						"name": "trigger",
 						"type": "autocomplete"
 					}
 				]
 	   		},
 			{
-				"id": "state_change",
+				"id": "state_changed_in",
 				"title":
 				{
-					"nl": "Staat wijziging",
-					"en": "State change"
+					"nl": "State gewijzigd naar",
+					"en": "State changed to"
 				},
 				"fluidArgs": true,
 				"args": [
 					{
-						"name": "state_group",
+						"name": "group",
 						"type": "autocomplete"
 					},
 					{
-						"name": "room",
+						"name": "section",
 						"type": "autocomplete"
 					},
 					{
 						"name": "state",
+						"type": "autocomplete"
+					}
+				]
+	   		},
+			{
+				"id": "state_changed",
+				"title":
+				{
+					"nl": "State gewijzigd",
+					"en": "State changed"
+				},
+				"fluidArgs": true,
+				"args": [
+					{
+						"name": "group",
+						"type": "autocomplete"
+					},
+					{
+						"name": "section",
 						"type": "autocomplete"
 					}
 				]
@@ -75,17 +94,17 @@
 				"id": "state",
 				"title":
 				{
-					"nl": "Staat is !{{actief|niet actief}}",
+					"nl": "State is !{{actief|niet actief}}",
 					"en": "State is !{{active|not active}}"
 				},
 				"fluidArgs": true,
 				"args": [
 					{
-						"name": "state_group",
+						"name": "group",
 						"type": "autocomplete"
 					},
 					{
-						"name": "room",
+						"name": "section",
 						"type": "autocomplete"
 					},
 					{
@@ -97,7 +116,7 @@
 	   	],
 		"actions": [
 			{
-	   			"id": "perform_action",
+	   			"id": "flow_action",
 	   			"title":
 	   			{
 	   				"nl": "Actie uitvoeren",
@@ -106,15 +125,15 @@
 				"fluidArgs": true,
 				"args": [
 					{
-						"name": "state_group",
+						"name": "group",
 						"type": "autocomplete"
 					},
 					{
-						"name": "room",
+						"name": "section",
 						"type": "autocomplete"
 					},
 					{
-						"name": "action_to_perform",
+						"name": "flow_action",
 						"type": "autocomplete"
 					}
 				]
@@ -123,17 +142,17 @@
 	   			"id": "set_state",
 	   			"title":
 	   			{
-	   				"nl": "Stel staat in",
+	   				"nl": "Stel state in",
 	   				"en": "Set state"
 	   			},
 				"fluidArgs": true,
 				"args": [
 					{
-						"name": "state_group",
+						"name": "group",
 						"type": "autocomplete"
 					},
 					{
-						"name": "room",
+						"name": "section",
 						"type": "autocomplete"
 					},
 					{

@@ -1,4 +1,6 @@
 {
+	"explanationUrl": "../assets/explanation-en.html",
+	
 	"boolean": {
 		"yes": "Yes",
 		"no": "No"
@@ -7,8 +9,27 @@
 	"close": "Close",
 	
 	"tab": {
-		"settings": {
-			"title": "Settings"
+		"stateOverview": {
+			"title": "State overview"
+		},
+		"groups": {
+			"title": "Groups"
+		},
+		"sections": {
+			"title": "Sections",
+			"sectionsFor": "Sections for "
+		},
+		"states": {
+			"title": "States",
+			"statesFor": "States for "
+		},
+		"group": {
+			"eventsFor": "Events for ",
+			"flowTriggersFor": "Flow triggers for ",
+			"flowActionsFor": "Flow actions for "
+		},
+		"explanation": {
+			"title": "Explanation"
 		}
 	},
 	
@@ -17,22 +38,29 @@
 		"deleteButton": "Delete",
 		"moveButton": "Drag to move",
 		
-		"stateGroups": {
+		"stateOverview": {
+			"title": "State overview",
+			"group": "Group",
+			"section": "Section",
+			"currentState": "Current state"
+		},
+		
+		"groups": {
 			"title": "Groups",
-			"explanation": "",
+			"explanation": "You use groups to group your states in, so you can use multiple types of states.",
 			"addButton": "Add",
 			"description": "Description",
+			"enableFlows": "Use in flows",
 			"confirmDelete": "Are you sure you want to delete the group \"[description]\"?",
 			"inUse": {
 				"error": "The group is still in use"
 			}
 		},
-		"rooms": {
+		"sections": {
 			"title": "Sections",
-			"explanation": "",
+			"explanation": "You can assign states to sections, for example rooms in your home.",
 			"addButton": "Add",
 			"description": "Description",
-			"isActive": "Active",
 			"currentState": "Current state",
 			"confirmDelete": "Are you sure you want to delete the section \"[description]\"?",
 			"inUse": {
@@ -42,46 +70,63 @@
 		},
 		"states": {
 			"title": "States",
-			"explanation": "",
+			"explanation": "States are the values you assign to your sections. For example, 'Lights on' or 'Lights off' in case of rooms.",
 			"addButton": "Add",
 			"description": "Description",
-			"isActive": "Active",
-			"isOverruling": "Priority",
+			"hasPriority": "Has priority",
 			"confirmDelete": "Are you sure you want to delete the state \"[description]\"?",
+			"noStates": "There are no states yet",
+			"hasNoState": "No state assigned.",
 			"inUse": {
 				"error": "The state is still in use",
 				"one": "one state",
 				"multiple": "[quantity] states"
 			}
 		},
-		"actions": {
-			"title": "Actions",
-			"explanation": "",
+		"flowTriggers": {
+			"title": "Flow triggers",
+			"explanation": "Flow triggers are what you trigger on in the Homey flow editor (left column). You can trigger these as a flow card in an event, after a flow action has taken place.",
 			"addButton": "Add",
 			"description": "Description",
-			"isActive": "Active",
-			"isTriggerable": "Triggerable",
-			"isPerformable": "Performable",
-			"nrOfFollowUps": "# Follow-ups",
-			"confirmDelete": "Are you sure you want to delete the action \"[description]\"?",
+			"confirmDelete": "Are you sure you want to delete the flow trigger \"[description]\"?",
 			"inUse": {
-				"error": "The action is still in use",
-				"one": "one action",
-				"multiple": "[quantity] actions"
+				"error": "The flow trigger is still in use",
+				"one": "one flow trigger",
+				"multiple": "[quantity] flow triggers"
 			}
 		},
-		"followUps": {
-			"title": "Follow-ups",
-			"explanation": "",
+		"flowActions": {
+			"title": "Flow actions",
+			"explanation": "Flow actions are actions you execute in the Homey flow editor (right column). You can intercept these actions using events.",
 			"addButton": "Add",
-			"isActive": "Active",
-			"delaySeconds": "Delay",
-			"newState": "Next state",
-			"newAction": "Next action",
-			"confirmDelete": "Are you sure you want to delete this follow-up?",
+			"description": "Description",
+			"confirmDelete": "Are you sure you want to delete the flow action \"[description]\"?",
 			"inUse": {
-				"one": "one follow-up",
-				"multiple": "[quantity] follow-ups"
+				"error": "The flow action is still in use",
+				"one": "one flow action",
+				"multiple": "[quantity] flow actions"
+			}
+		},
+		"events": {
+			"title": "Events",
+			"explanation": "Events are where 'the magic happens', and where you decide what needs to be done when a an action is performed, such as assigning a state, or triggering a flow.",
+			"addButton": "Add",
+			"eventType": "Event",
+			"delaySeconds": "Delay",
+			"conditionType": "Condition",
+			"executionType": "Execution",
+			"after": "After",
+			"if": "If",
+			"ifNot": "If not",
+			"always": "Always",
+			"set": "Set state",
+			"trigger": "Trigger",
+			"cannotAdd": "You can only add events after you've added at least 1 flow action.",
+			"execute": "Execute",
+			"confirmDelete": "Are you sure you want to delete this event?",
+			"inUse": {
+				"one": "one event",
+				"multiple": "[quantity] events"
 			}
 		}
 	},
@@ -92,16 +137,18 @@
 		
 		"error": {
 			"isMandatory": "[field] is mandatory.",
-			"isNotPositiveNumber": "[field] must be a positive number."
+			"isNotPositiveNumber": "[field] must be a positive number.",
+			"noFlowToTriggerEvent": "You have not selected a flow action to trigger this event on.",
+			"eventStateOrTrigger": "You need to select at a new state and/or a flow card to trigger."
 		},
 		
-		"stateGroup": {
-			"description" : "Description"
-		},
-		
-		"room": {
+		"group": {
 			"description" : "Description",
-			"isActive": "Active",
+			"enableFlows": "Enable events in flow cards (triggers & actions)"
+		},
+		
+		"section": {
+			"description" : "Description",
 			"currentState": "Current state",
 			"newState": "New state",
 			"newStateInfo": "When you change the section's state manually, the \"State change\" trigger will be fired in your flows (if applicable)."
@@ -109,28 +156,30 @@
 		
 		"state": {
 			"description" : "Description",
-			"isActive": "Active",
-			"isOverruling": "Priority",
-			"isOverrulingInfo": "Other states cannot overwrite this state, unless the other state has been set as priority as well."
+			"hasPriority": "Has priority",
+			"hasPriorityInfo": "Other states cannot overwrite this state, unless the other state has been set as priority as well."
 		},
 		
-		"action": {
-			"description" : "Description",
-			"isActive": "Active",
-			"isTriggerable": "Can be triggered in flows",
-			"isTriggerableInfo": "If checked, the action can be used in flow triggers.",
-			"isPerformable": "Can be performed in flows",
-			"isPerformableInfo": "If checked, the action can be performed in flows."
+		"flowTrigger": {
+			"description" : "Description"
 		},
 		
-		"followUp": {
-			"isActive": "Active",
-			"doNotCheckOverruling": "Do not respect priority of current state",
-			"doNotCheckOverrulingInfo": "Normally the follow-up state will only be set if it is either a priority, or if the current state is not a priority. By checking this option, the state will be set anyhow.",
+		"flowAction": {
+			"description" : "Description"
+		},
+		
+		"event": {
+			"eventAction": "This event happens when",
 			"delaySeconds": "Delay in seconds",
-			"nextState": "Follow-up state",
-			"nextAction": "Follow-up action",
-			"nextActionInfo": "The follow-up action will only be performed if your follow-up state can be set with respect to the current state's priority. If you have not specified a follow-up state, the follow-up action will be performed anyhow."
+			"conditionState": "State must [not] be",
+			"doType": "What needs to be done?",
+			"doTypeSetState": "New state",
+			"doTypeExecuteFlowTrigger": "Trigger",
+			"doTypeExecuteFlowAction": "Execute action",
+			"setState": "New state",
+			"canOverrideStatePriority": "Set state regardless of priority",
+			"executeFlowTrigger": "Trigger a flow",
+			"executeFlowAction": "Execute an action"
 		}
 	}
 }

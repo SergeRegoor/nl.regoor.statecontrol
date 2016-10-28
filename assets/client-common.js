@@ -7,7 +7,6 @@ $.fn.loadLocalizedTexts = function() {
 			var localizedTextFor = $(this).attr('rel-localized-for');
 			var localizedTextId = $(this).attr('rel-localized');
 			var localizedText = __(localizedTextId);
-			console.log('localizedTextId: ' + localizedText);
 			if ((localizedTextFor != null) && (localizedTextFor.length > 0))
 				$(this).attr(localizedTextFor, localizedText);
 			else if ((localizedText.indexOf('/>') >= 0) || (localizedText.indexOf('</') >= 0))
@@ -24,7 +23,11 @@ $.fn.loadLocalizedTexts = function() {
 
 $.fn.applyLocalText = function(setting) {
 	if (setting == null) return $(this);
-	if ((setting.localText == null) || (setting.localText.length == 0)) return $(this);
+	if ((setting.localText == null) || (setting.localText.length == 0))  {
+		if ((setting != null) && (setting.length > 0))
+			$(this).text(setting);
+		return $(this);
+	}
 	$(this).text(__(setting.localText));
 	return $(this);
 }

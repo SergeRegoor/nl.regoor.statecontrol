@@ -1,87 +1,126 @@
-var _settingsKey = 'statecontrol-settings';
 var _settings = {};
 
 // Array which will contain all tabs
 var _tabs = [];
-var _roomStates = [];
-
-$(document).ready(function(){
-});
+var _sectionStates = [];
 
 function onHomeyReady(){
-	// Get app's settings from Homey
-	Homey.get(_settingsKey, function(error, settingValue){ 
-		_settings = settingValue;
-		if (_settings == null) _settings = {};
-		if (_settings.stateGroups == null) _settings.stateGroups = [];
-		if (_settings.rooms == null) _settings.rooms = [];
-		if (_settings.states == null) _settings.states = [];
-		if (_settings.actions == null) _settings.actions = [];
-		
-		// Initialize and load tabs, and select first tab
-		initializeTabs();
-		$.each(_tabs, function(i, tab){ loadTab(tab, i); });
-		$('.tabControl .tab').eq(0).selectTab();
-		
-		// Retrieve current room states every second
-		retrieveRoomStates();
-		repeatFunction(1000, retrieveRoomStates);
+	// Get app's settings from our own API
+	Homey.api('GET', '/get-settings/', function(err, result){
+		if (err || ((result != null) && !result.successful || (result.settings == null))) alert('Settings could not be loaded, sorry. Please try again.');
+		else {
+			_settings = result.settings;
+			
+			// Initialize and load tabs, and select first tab
+			$('.tabControl').invalidateTabs();
+			
+			// Retrieve current section states every second
+			retrieveSectionStates();
+			repeatFunction(1000, retrieveSectionStates);
+		}
 	});
 	Homey.ready();
 };
 
-// Retrieve room states
-function retrieveRoomStates() {
-	Homey.api('GET', '/room-states/', function(err, result){
+// Retrieve section states
+function retrieveSectionStates() {
+	Homey.api('GET', '/section-states/', function(err, result){
 		if (err || (result == null) || !result.successful) return;
-		_roomStates = result.roomStates;
+		_sectionStates = result.sectionStates;
 	});
 	return true;
 }
 
-// Save settings to Homey
-function saveSettings() { Homey.set(_settingsKey, _settings); };
-
-// Get room state
-function getRoomState(roomId, callback) {
-	var room = findObjInArray(_settings.rooms, 'id', roomId);
-	if (room == null) return null;
-	Homey.get('roomState'+room.id, function(error, settingValue) {
-		if (error) callback(null);
-		if (!error) {
-			var state = null;
-			var stateId = settingValue;
-			if ((stateId != null) && (stateId.length > 0))
-				state = findObjInArray(_settings.states, 'id', stateId);
-			callback(state);
+// Set section state
+function setSectionState(section, newStateId) {
+	Homey.api('POST', '/set-section-state/?groupid='+section.groupId+'&sectionid='+section.id+'&stateid='+newStateId, function(err, result){
+		if (err || (result == null) || !result.successful) {
 		}
 	});
 }
 
-// Set room state
-function setRoomState(roomId, stateId, callback) {
-	var room = findObjInArray(_settings.rooms, 'id', roomId);
-	var state = findObjInArray(_settings.states, 'id', stateId);
-	if ((room == null) || (state == null)) return null;
-	Homey.set('roomState'+room.id, state.id, function(){ if (callback != null) callback(); });
-}
-
-// Get the description of the state
-function getStateDescription(state) {
-	if (state == null) return '';
-	return state.description;
-}
+// Save settings to Homey
+function saveSettings() {
+	Homey.set('statecontrol-settings', _settings, function(err){ if (err) alert('Error during saving of your settings. Please try again.'); });
+};
 
 // Initialize array of tabs
 function initializeTabs() {
 	_tabs = [];
-	$.each(_settings.stateGroups, function(i, stateGroup){ addStateGroupTab(stateGroup); });
-	addSettingsTab();
+	
+	if ((_settings.groups.length > 0) && (_settings.sections.length > 0) && (_settings.states.length > 0))
+		_tabs[_tabs.length] = { id:'stateOverview', title:__('tab.stateOverview.title'), parentId:'', controls:[ { type:'list', listType:'stateOverview' } ] };
+	
+	// Add a tab for each group, each tab with lists for events, flow triggers and flow actions
+	$.each(_settings.groups, function(i, group) {
+		if (group.enableFlows)
+			_tabs[_tabs.length] = { id:'group'+group.id, title:__('tab.group.eventsFor')+' '+group.description, parentId:group.id, controls:[
+				{ title:__('tab.group.eventsFor')+' '+group.description, type:'list', listType:'events' },
+				{ title:__('tab.group.flowActionsFor')+' '+group.description, type:'list', listType:'flowActions' },
+				{ title:__('tab.group.flowTriggersFor')+' '+group.description, type:'list', listType:'flowTriggers' }
+			]};
+	});
+	
+	// If groups have been defined, add tabs for the sections and states
+	if (_settings.groups.length > 0) {
+		var statesTab = { id:'states', title:__('tab.states.title'), controls:[] };
+		$.each(_settings.groups, function(i, group){
+			statesTab.controls[statesTab.controls.length] = { title:__('tab.states.statesFor')+' '+group.description, type:'list', listType:'states', parentId:group.id };
+		});
+		_tabs[_tabs.length] = statesTab;
+		
+		var sectionsTab = { id:'sections', title:__('tab.sections.title'), controls:[] };
+		$.each(_settings.groups, function(i, group){
+			sectionsTab.controls[sectionsTab.controls.length] = { title:__('tab.sections.sectionsFor')+' '+group.description, type:'list', listType:'sections', parentId:group.id };
+		});
+		_tabs[_tabs.length] = sectionsTab;
+	}
+	
+	_tabs[_tabs.length] = { id:'groups', title:__('tab.groups.title'), parentId:'', controls:[ { type:'list', listType:'groups' } ] };
+	_tabs[_tabs.length] = { id:'explanation', title:__('tab.explanation.title'), parentId:'', controls:[ { type:'content', url:__('explanationUrl') } ] };
 }
 
-// Add tab definitions
-function addStateGroupTab(stateGroup) { _tabs[_tabs.length] = { title:stateGroup.description, parentId:stateGroup.id, controls:[{type:'list', listType:'rooms' }, {type:'list', listType:'states' }, {type:'list', listType:'actions' }] }; }
-function addSettingsTab() { _tabs[_tabs.length] = { localText:'tab.settings.title', parentId:'', controls:[{type:'list', listType:'stateGroups' }] }; }
+// (Re)load tabs in UI
+$.fn.invalidateTabs = function() {
+	initializeTabs();
+	var tabControlObj = $(this);
+	var activeTabId = '';
+	if (tabControlObj.find('.tab.active').length > 0)
+		activeTabId = tabControlObj.find('.tab.active').attr('rel-tabid');
+	var scrollTopValue = $(window).scrollTop();
+	
+	tabControlObj.find('.tabs, .pages').empty();
+	$.each(_tabs, function(i, tab){ addTab(tab); });
+	tabControlObj.loadLocalizedTexts();
+	
+	if (activeTabId.length > 0) {
+		tabControlObj.find('.tab[rel-tabid="'+activeTabId+'"]').selectTab();
+		if (scrollTopValue >= 0)
+			$(window).scrollTop(scrollTopValue);
+	} else
+		tabControlObj.find('.tab').eq(0).selectTab();
+}
+
+// Load the tab and its controls
+function addTab(tab) {
+	// Add tab item & page
+	$('.tabControl .tabs').append($('<div/>').addClass('tab').attr('rel-tabid',tab.id).text(tab.title).applyLocalText(tab).attr('rel-parentid', tab.parentId).click(function(){ $(this).selectTab(); }));
+	var page = $('<div/>').addClass('page');
+	$('.tabControl .pages').append(	page).attr('rel-parentid', tab.parentId);
+	page.append($('<h2/>').addClass('tabTitle').text(tab.title).applyLocalText(tab));
+	
+	// Iterate through defined controls, and add them
+	$.each(tab.controls, function(i, control){
+		if (control.type == 'list') {
+			var parentId = control.parentId;
+			if (parentId == null)
+				parentId = tab.parentId;
+			loadList(control.listType, control.title, null, parentId, page);
+		} else if (control.type == 'content') {
+			$.get(control.url, function(html){ page.html(html); });
+		}
+	});
+}
 
 // Select a tab; make the tab and its respective page active
 $.fn.selectTab = function() {
@@ -92,46 +131,8 @@ $.fn.selectTab = function() {
 	$('.tabControl .page').eq(tabObj.index()).addClass('active');
 }
 
-// (Re)load tabs in UI
-$.fn.invalidateTabs = function() {
-	var tabControlObj = $(this);
-	tabControlObj.find('.tab').each(function(){
-		var tabObj = $(this);
-		var tab = findObjInArray(_tabs, 'parentId', tabObj.attr('rel-parentid'));
-		if (tab == null) {
-			tabControlObj.find('.page').eq(tabObj.index()).remove();
-			tabObj.remove();
-		} else {
-			tabObj.text(tab.title);
-			if (tab.localText != null) tabObj.attr('rel-localized', tab.localText);
-			tabControlObj.find('.page').eq(tabObj.index()).find('.tabTitle').text(tab.title);
-		}
-	});
-	$.each(_tabs, function(i, tab){
-		var tabObj = tabControlObj.find('.tab[rel-parentid="'+tab.parentId+'"]');
-		if (tabObj.length == 0)
-			loadTab(tab, i);
-	});
-	tabControl.loadLocalizedTexts();
-}
-
-// Load the tab and its controls
-function loadTab(tab, index) {
-	// Add tab item & page
-	$('.tabControl .tabs').insert(index, $('<div/>').addClass('tab').text(tab.title).applyLocalText(tab).attr('rel-parentid', tab.parentId).click(function(){ $(this).selectTab(); }));
-	var page = $('<div/>').addClass('page');
-	$('.tabControl .pages').insert(index, page).attr('rel-parentid', tab.parentId);
-	page.append($('<h2/>').addClass('tabTitle').text(tab.title).applyLocalText(tab));
-	
-	// Iterate through defined controls, and add them
-	$.each(tab.controls, function(i, control){
-		if (control.type == 'list')
-			loadList(control.listType, null, tab.parentId, page);
-	});
-}
-
 // Load a list into its container
-function loadList(listTypeName, masterParentId, parentId, containerObj) {
+function loadList(listTypeName, listTitle, masterParentId, parentId, containerObj) {
 	// Find the list type
 	var listType = findObjInArray(_listTypes, 'type', listTypeName);
 	if (listType == null) return;
@@ -139,8 +140,15 @@ function loadList(listTypeName, masterParentId, parentId, containerObj) {
 	// Add the list's container, title and explanation
 	var listParentObj = $('<fieldset/>').addClass('listContainer');
 	containerObj.append(listParentObj);
-	listParentObj.append($('<legend/>').applyLocalText(listType.title));
-	listParentObj.append($('<p/>').applyLocalText(listType.explanation));
+	var legendObj = $('<legend/>');
+	listParentObj.append(legendObj);
+	if ((listTitle != null) && (listTitle.length > 0))
+		legendObj.text(listTitle);
+	else
+		legendObj.applyLocalText(listType.title);
+	
+	if (listType.explanation != null)
+		listParentObj.append($('<p/>').applyLocalText(listType.explanation));
 	
 	// Add the header row and its columns
 	var headRowObj = $('<div/>').addClass('lister listRow head').attr('rel-listtype', listTypeName);
@@ -152,8 +160,16 @@ function loadList(listTypeName, masterParentId, parentId, containerObj) {
 	listParentObj.append(listObj);
 	
 	// Add button
-	var addButtonObj = $('<button/>').applyLocalText(listType.addButton).attr('rel-masterparentid', masterParentId).attr('rel-parentid', parentId).attr('rel-formtype', listType.formType).click(function(){ $(this).showForm(); });
-	listParentObj.append(addButtonObj);
+	if (listType.addButton != null) {
+		var addButtonObj = $('<button/>').applyLocalText(listType.addButton).attr('rel-masterparentid', masterParentId).attr('rel-parentid', parentId).attr('rel-formtype', listType.formType).click(function(){
+			var canAdd = true;
+			if (listType.onAdd != null)
+				canAdd = listType.onAdd($(this).attr('rel-parentid'));
+			if (canAdd)
+				$(this).showForm();
+		});
+		listParentObj.append(addButtonObj);
+	}
 	
 	// Load localized texts
 	listParentObj.loadLocalizedTexts();
@@ -212,33 +228,73 @@ $.fn.renderList = function() {
 				cellObj.append($('<button/>').text('-').attr('title', __('list.editButton')).addClass('deleteButton').attr('rel-id',sourceItem.id).attr('rel-parentid', parentId).click(function(){ if (listType.deleteItem != null) listType.deleteItem(listObj.attr('rel-masterparentid'), listObj.attr('rel-parentid'), sourceItem); }));
 			else if (column.type == 'move')
 				cellObj.append($('<button/>').text('-').attr('title', __('list.moveButton')).addClass('moveButton').attr('rel-id',sourceItem.id).attr('rel-parentid', parentId));
-			else if (column.type == 'roomState') {
-				function updateRoomState() { 
-					var roomState = findObjInArray(_roomStates, 'roomId', sourceItem.id);
-					if (roomState != null)
-						cellObj.text(getStateDescription(findObjInArray(_settings.states, 'id', roomState.stateId))); 
+			else if (column.type == 'sectionState') {
+				function updateSectionState() { 
+					cellObj.empty();
+					var sectionState = findObjInArray(_sectionStates, 'sectionId', sourceItem.id);
+					if (sectionState != null) {
+					var state = findObjInArray(_settings.states, 'id', sectionState.stateId);
+						if (state != null) {
+							var spanObj = $('<span/>').text(state.description);
+							if (state.hasPriority) spanObj.addClass('hasPriorityState');
+							cellObj.append(spanObj);
+						}
+					}
 					return true;
 				}
-				updateRoomState();
-				repeatFunction(250, updateRoomState);
+				updateSectionState();
+				repeatFunction(250, updateSectionState);
 			} else {
 				// Value cell
 				var cellValue = '';
-				if (column.propertyType == 'boolean')
+				if (column.type == 'getValue')
+					cellValue = column.onGetValue(sourceItem);
+				else if (column.type == 'setObject') {
+					cellValue = null;
+					column.onSetObject(cellObj, sourceItem);
+				}
+				else if (column.propertyType == 'boolean')
 					cellValue = sourceItem[column.property] ? __('boolean.yes') : __('boolean.no');
 				else if (column.propertyType == 'state') {
+					cellValue = null;
 					var state = findObjInArray(_settings.states, 'id', sourceItem[column.property]);
-					if (state != null) cellValue = state.description;
+					if (state != null) {
+						var spanObj = $('<span/>').text(state.description);
+						if (state.hasPriority) spanObj.addClass('hasPriorityState');
+						cellObj.append(spanObj);
+					}
 				}
-				else if (column.propertyType == 'action') {
-					var action = findObjInArray(_settings.actions, 'id', sourceItem[column.property]);
-					if (action != null) cellValue = action.description;
+				else if (column.propertyType == 'flowTrigger') {
+					var flowTrigger = findObjInArray(_settings.flowTriggers, 'id', sourceItem[column.property]);
+					if (flowTrigger != null) cellValue = flowTrigger.description;
+				}
+				else if (column.propertyType == 'flowAction') {
+					var flowAction = findObjInArray(_settings.flowActions, 'id', sourceItem[column.property]);
+					if (flowAction != null) cellValue = flowAction.description;
+				}
+				else if (column.propertyType == 'group') {
+					cellValue = null;
+					var group = findObjInArray(_settings.groups, 'id', sourceItem[column.property]);
+					if (group != null) {
+						if (!group.enableFlows)
+							cellValue = group.description;
+						else
+							cellObj.append($('<a/>').attr('href','#').text(group.description).click(function(e){
+								e.preventDefault();
+								$('.tab[rel-tabid="group'+group.id+'"]').selectTab();
+							}));
+					}
 				}
 				else if (column.propertyType == 'array')
 					cellValue = sourceItem[column.property].length;
 				else
 					cellValue = sourceItem[column.property];
-				cellObj.text(cellValue);
+				
+				if (cellValue != null) {
+					if (column.cellPostfix != null)
+						cellValue += column.cellPostfix;
+					cellObj.html(cellValue);
+				}
 			}
 			rowObj.append(cellObj);
 		});
@@ -292,6 +348,8 @@ $.fn.showForm = function() {
 		else
 			popupHeight += 65;
 	});
+	if (formType.heightOffset != null)
+		popupHeight += formType.heightOffset;
 	var zIndex = 25;
 	if ((masterParentId != null) && (masterParentId.length > 0))
 		zIndex = 50;
@@ -319,17 +377,19 @@ $.fn.showForm = function() {
 		sourceItem = { id:createGuid() };
 		if ((formType.filter != null) && (formType.filter.property != null) && (parentId != null) && (parentId.length > 0))
 			sourceItem[formType.filter.property] = parentId;
-		// Fill the new source item with default values
-		$.each(formType.fields, function(i, field){
-			if ((field.propertyType != 'array') && (field.type != 'roomState')) {
+	}
+	// Fill the source item with default values
+	$.each(formType.fields, function(i, field){
+		if (sourceItem[field.property] == null) {
+			if ((field.propertyType != 'array') && (field.type != 'sectionState')) {
 				var defaultValue = '';
 				if (field.defaultValue != null)
 					defaultValue = field.defaultValue;
 				sourceItem[field.property] = defaultValue;
-			} else
+			} else if (field.propertyType == 'array')
 				sourceItem[field.property] = [];
-		});
-	}
+		}
+	});
 	
 	popupContainer.attr('rel-id', sourceItem.id);
 	
@@ -353,53 +413,70 @@ $.fn.showForm = function() {
 			}
 			
 			// Create the field container
-			var fieldRowObj = $('<div/>').addClass('field row');
+			var fieldRowObj = $('<div/>').addClass('field row').attr('id', 'fieldContainer'+field.property);
 			fieldParent.append(fieldRowObj);
 			var inputControl = null;
 			
 			// Show a clickable tool tip if necessary
-			if ((field.info != null) && (field.info.localText != null) && (field.info.localText.length > 0))
+			var hasTooltip = false;
+			if ((field.info != null) && (field.info.localText != null) && (field.info.localText.length > 0)) {
+				hasTooltip = true;
 				fieldRowObj.append($('<div/>').addClass('infoTooltip').text('i').click(function(){
 					var tooltipPopup = loadPopup(createGuid(), null, 200, 450, 175);
 					tooltipPopup.append($('<p/>').applyLocalText(field.info));
 					tooltipPopup.append($('<button/>').addClass('right').text(__('close')).click(function(){ tooltipPopup.closePopup(); }));
 				}));
+			}
 			
 			// If the field is for a boolean, the checkbox needs to be shown before the label
 			if (fieldType == 'boolean') {
-				inputControl = $('<input/>').attr('type', 'checkbox').attr('id', 'field'+field.property).prop('checked', sourceItem[field.property]);
+				inputControl = $('<input/>').attr('type', 'checkbox').prop('checked', sourceItem[field.property]);
 				fieldRowObj.append(inputControl);
 			}
 			
 			// Add the label
-			fieldRowObj.append($('<label/>').attr('for', 'field'+field.property).applyLocalText(field.title));
+			var labelObj = $('<label/>').attr('for', 'field'+field.property).applyLocalText(field.title);
+			if (hasTooltip) labelObj.addClass('withTooltip');
+			fieldRowObj.append(labelObj);
 			
 			// Add a text input if appropriate
 			if (fieldType == 'text') {
-				inputControl = $('<input/>').attr('type', 'text').attr('id', 'field'+field.property).val(sourceItem[field.property]);
+				inputControl = $('<input/>').attr('type', 'text').val(sourceItem[field.property]);
 				fieldRowObj.append(inputControl);
-			} else if ((fieldType == 'state') || (fieldType == 'newRoomState') || (fieldType == 'action')) {
+			} else if (fieldType == 'radio') {
+				inputControl = $('<div/>').addClass('columnContainer');
+				$.each(field.items, function(i, item){
+					var colObj = $('<div/>').addClass('col').css('width', (100/field.items.length)+'%');
+					inputControl.append(colObj);
+					var radioObj = $('<input/>').attr('type','radio').val(item.id).attr('name',field.property).attr('id', 'field'+field.property+item.id);
+					if (sourceItem[field.property] == item.id)
+						radioObj.prop('checked', true);
+					colObj.append(radioObj);
+					colObj.append($('<label/>').attr('for', 'field'+field.property+item.id).applyLocalText(item.title));
+				});
+				fieldRowObj.append(inputControl);
+			} else if ((fieldType == 'state') || (fieldType == 'newSectionState') || (fieldType == 'flowTrigger') || (fieldType == 'flowAction')) {
 				// Add a dropdown if appropriate
 				var selectObj = $('<select/>');
-				if (field.property != null)
-					selectObj.attr('id', 'field'+field.property);
-				else if (field.type != null)
+				if (field.type != null)
 					selectObj.attr('id', 'field'+field.type);
 				if (field.addEmptyItem) selectObj.append($('<option/>').val('').text(''));
 				
 				// Determine the dropdown's list items
 				var listItems = [];
-				if ((fieldType == 'state') || (fieldType == 'newRoomState'))
+				if ((fieldType == 'state') || (fieldType == 'newSectionState'))
 					listItems = _settings.states;
-				else if (fieldType == 'action')
-					listItems = _settings.actions;
+				else if (fieldType == 'flowTrigger')
+					listItems = _settings.flowTriggers;
+				else if (fieldType == 'flowAction')
+					listItems = _settings.flowActions;
 					
 				// Add the list items as options to the dropdown
 				$.each($.grep(listItems, function(item){
 					if ((masterParentId != null) && (masterParentId.length > 0))
-						return (item.stateGroupId == masterParentId) && (item.id != sourceItem.id) && (item.id != parentId);
+						return (item.groupId == masterParentId) && (item.id != sourceItem.id) && (item.id != parentId);
 					else
-						return (item.stateGroupId == parentId) && (item.id != sourceItem.id) && (item.id != parentId);
+						return (item.groupId == parentId) && (item.id != sourceItem.id) && (item.id != parentId);
 				}), function(i, item){
 					selectObj.append($('<option/>').val(item.id).text(item.description));
 				});
@@ -409,19 +486,32 @@ $.fn.showForm = function() {
 				inputControl = selectObj;
 				fieldRowObj.append(inputControl);
 			}
-			else if (fieldType == 'currentRoomState') {
-				var roomStateObj = $('<div/>');
-				fieldRowObj.append(roomStateObj);
-				function updateRoomState() { 
-					var roomState = findObjInArray(_roomStates, 'roomId', sourceItem.id);
-					if (roomState != null)
-						roomStateObj.text(getStateDescription(findObjInArray(_settings.states, 'id', roomState.stateId))); 
+			else if (fieldType == 'currentSectionState') {
+				var sectionStateObj = $('<div/>');
+				fieldRowObj.append(sectionStateObj);
+				function updateSectionState() { 
+					sectionStateObj.empty();
+					var sectionState = findObjInArray(_sectionStates, 'sectionId', sourceItem.id);
+					if (sectionState != null) {
+						var state = findObjInArray(_settings.states, 'id', sectionState.stateId);
+						if (state != null) {
+							var spanObj = $('<span/>').text(state.description);
+							if (state.hasPriority) spanObj.addClass('hasPriorityState');
+							sectionStateObj.append(spanObj);
+						}
+					}
+					else if (_settings.states.length == 0)
+						sectionStateObj.text(__('list.states.noStates'));
+					else
+						sectionStateObj.text(__('list.states.hasNoState'));
 					return true;
 				}
-				updateRoomState();
-				repeatFunction(250, updateRoomState);
+				updateSectionState();
+				repeatFunction(250, updateSectionState);
 			}
 			
+			if ((inputControl != null) && (field.property != null) && (fieldType != 'radio'))
+				inputControl.attr('id', 'field'+field.property);
 			if ((inputControl != null) && (field.onChange != null)) {
 				inputControl.change(function(){ field.onChange(popupContainer, inputControl); });
 				inputControl.blur(function(){ field.onChange(popupContainer, inputControl); });
@@ -438,7 +528,7 @@ $.fn.showForm = function() {
 		// Iterate through defined controls, and add them
 		$.each(formType.controls, function(i, control){
 			if (control.type == 'list') {
-				var listObj = loadList(control.listType, parentId, sourceItem.id, popupContainer);
+				var listObj = loadList(control.listType, null, parentId, sourceItem.id, popupContainer);
 				listObj.hide();
 			}
 		});
@@ -449,18 +539,23 @@ $.fn.showForm = function() {
 		// Validate input
 		var errorMessages = '';
 		$.each(formType.fields, function(i, field){
-			if ((field.propertyType != 'array') && (field.type != 'roomState')) {
+			if ((field.propertyType != 'array') && (field.type != 'sectionState')) {
 				if ((field.isMandatory != null) && field.isMandatory && (getFieldValueOfFormField(popupContainer, field).toString().length == 0))
-					errorMessages += __('edit.error.isMandatory').replace('[field]', field.title);
+					errorMessages += __('edit.error.isMandatory').replace('[field]', __(field.title.localText));
 				else if ((field.isNumeric != null) && field.isNumeric && !isNotNegativeInteger(getFieldValueOfFormField(popupContainer, field).toString()))
-					errorMessages += __('edit.error.isNotPositiveNumber').replace('[field]', field.title);
+					errorMessages += __('edit.error.isNotPositiveNumber').replace('[field]', __(field.title.localText));
 			}
 		});
+		if ((errorMessages.length == 0) && (formType.onValidate != null)) {
+			var customErrorMessages = formType.onValidate(popupContainer, sourceItem);
+			if ((customErrorMessages != null) && (customErrorMessages.length > 0))
+				errorMessages += customErrorMessages;
+		}
 		if (errorMessages.length > 0) { alert(errorMessages); return; }
 		
 		// Save field values to source item
 		$.each(formType.fields, function(i, field){
-			if ((field.propertyType != 'array') && (field.type != 'roomState'))
+			if ((field.propertyType != 'array') && (field.type != 'sectionState'))
 				sourceItem[field.property] = getFieldValueOfFormField(popupContainer, field);
 		});
 		
@@ -517,12 +612,19 @@ function getFieldValueOfFormField(formContainer, field) {
 	var fieldValue = '';
 	if (fieldType == 'boolean')
 		fieldValue = fieldObj.prop('checked');
+	else if (fieldType == 'radio')
+		fieldValue = formContainer.find('input[type="radio"][name="'+field.property+'"]:checked').val();
 	else
 		fieldValue = fieldObj.val();
 	return fieldValue;
 }
 
-// Get the specified action from the settings object
-function getActionById(actionId) {
-	return findObjInArray(_settings.actions, "id", actionId);
+// Get the specified flow trigger from the settings object
+function getFlowTriggerById(flowTriggerId) {
+	return findObjInArray(_settings.flowTriggers, "id", flowTriggerId);
+}
+
+// Get the specified flow action from the settings object
+function getFlowActionById(flowActionId) {
+	return findObjInArray(_settings.flowActions, "id", flowActionId);
 }
