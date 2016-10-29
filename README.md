@@ -8,4 +8,5 @@ The goal of the app is to have a more structured method where multiple flows wil
 # Revision history
 
 2016-10-28 - v0.2.1 - Restructured settings and terminology, refactoring, help page.
+
 2016-10-24 - v0.0.1 - Initial version
