@@ -26,7 +26,6 @@ module.exports = [
 						};
 					}
 				}
-				
 				result.successful = true;
 			} catch(exception) {
 				result.errorMessage = exception.message;
@@ -61,9 +60,8 @@ module.exports = [
 				if (section == null) throw new Error('Could not find section with ID '+sectionId+'.');
 				if (state == null) throw new Error('Could not find state with ID '+stateId+'.');
 				
-				result.successful = true;
 				Homey.app.setSectionState(stateControl, section, state, true);
-				
+				result.successful = true;
 			} catch(exception) {
 				result.errorMessage = exception.message;
 			}
@@ -83,6 +81,37 @@ module.exports = [
 			try {
 				var stateControl = new StateControl();
 				result.settings = stateControl.getSettings();
+				result.successful = true;
+			} catch(exception) {
+				result.errorMessage = exception.message;
+			}
+			callback(null, result);
+		}
+	},
+	{
+		description:			'Execute flow action',
+		method: 				'POST',
+		path:					'/execute-flow-action/',
+		fn: function(callback, args) {
+			var result = {
+				successful: false,
+				errorMessage: ''
+			};
+			try {
+				var sectionId = args.query.sectionid;
+				var flowActionId = args.query.actionid;
+				
+				if ((sectionId == null) || (sectionId.length == 0)) throw new Error('No section ID supplied.');
+				if ((flowActionId == null) || (flowActionId.length == 0)) throw new Error('No flow action ID supplied.');
+				
+				var stateControl = new StateControl();
+				var section = stateControl.getSectionById(sectionId);
+				var flowAction = stateControl.getFlowActionById(flowActionId);
+				
+				if (section == null) throw new Error('Could not find section with ID '+sectionId+'.');
+				if (flowAction == null) throw new Error('Could not find flow action with ID '+flowActionId+'.');
+				
+				Homey.app.executeFlowAction(stateControl, section, flowAction);
 				result.successful = true;
 			} catch(exception) {
 				result.errorMessage = exception.message;

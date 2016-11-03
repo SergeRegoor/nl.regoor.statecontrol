@@ -1,6 +1,6 @@
 {
     "id": "nl.regoor.statecontrol",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "compatibility": "0.x || 1.x",
    	"name": {
         "nl": "State Control",

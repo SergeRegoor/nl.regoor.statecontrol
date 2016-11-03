@@ -124,7 +124,7 @@ module.exports.fireEvents = function(stateControl, section, events) {
 		if (events[idx].delaySeconds <= 0)
 			module.exports.executeEvent(stateControl, section, events[idx]);
 		else
-			setTimeout(events[idx].delaySeconds*1000, function(){ module.exports.executeEvent(stateControl, section, events[idx]); });
+			setTimeout(function(){ module.exports.executeEvent(stateControl, section, events[idx]); }, events[idx].delaySeconds*1000);
 	}
 	return true;
 };
