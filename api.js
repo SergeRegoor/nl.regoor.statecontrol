@@ -81,6 +81,7 @@ module.exports = [
 			try {
 				var stateControl = new StateControl();
 				result.settings = stateControl.getSettings();
+				stateControl.sortObjects(result.settings);
 				result.successful = true;
 			} catch(exception) {
 				result.errorMessage = exception.message;
@@ -90,7 +91,7 @@ module.exports = [
 	},
 	{
 		description:			'Execute flow action',
-		method: 				'POST',
+		method: 				'GET',
 		path:					'/execute-flow-action/',
 		fn: function(callback, args) {
 			var result = {
@@ -100,6 +101,7 @@ module.exports = [
 			try {
 				var sectionId = args.query.sectionid;
 				var flowActionId = args.query.actionid;
+				console.log('Executing flow action ' + flowActionId + ' for section ' + sectionId);
 				
 				if ((sectionId == null) || (sectionId.length == 0)) throw new Error('No section ID supplied.');
 				if ((flowActionId == null) || (flowActionId.length == 0)) throw new Error('No flow action ID supplied.');

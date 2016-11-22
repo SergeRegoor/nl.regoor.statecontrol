@@ -1,6 +1,6 @@
 {
     "id": "nl.regoor.statecontrol",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "compatibility": "0.x || 1.x",
    	"name": {
         "nl": "State Control",
@@ -15,10 +15,10 @@
 		"large": "./assets/images/large.png",
 		"small": "./assets/images/small.png"
 	},
-      "author": {
-        "name": "Serge Regoor",
-        "email": "serge@regoor.nl"
-    },
+	"author": {
+		"name": "Serge Regoor",
+		"email": "serge@regoor.nl"
+	},
     "permissions": [],
 	"flow":
 	{
