@@ -122,15 +122,22 @@ module.exports.fireEvents = function(stateControl, section, events) {
 	if ((stateControl == null) || (section == null) || (events == null) || (events.length == 0)) return false;
 	for (var idx = 0; idx < events.length; idx++) {
 		if (events[idx].delaySeconds <= 0)
-			module.exports.executeEvent(stateControl, section, events[idx]);
-		else
-			setTimeout(function(){ module.exports.executeEvent(stateControl, section, events[idx]); }, events[idx].delaySeconds*1000);
+			module.exports.executeEvent(stateControl, section.id, events[idx].id);
+		else {
+			var sectionId = section.id;
+			var eventId = events[idx].id;
+			setTimeout(function(){ module.exports.executeEvent(null, sectionId, eventId); }, events[idx].delaySeconds*1000);
+		}
 	}
 	return true;
 };
 
 // Execute event
-module.exports.executeEvent = function(stateControl, section, event) {
+module.exports.executeEvent = function(stateControl, sectionId, eventId) {
+	if (stateControl == null)
+		stateControl = new StateControl();
+	var section = stateControl.getSectionById(sectionId);
+	var event = stateControl.getEventById(eventId);
 	if ((stateControl == null) || (section == null) || (event == null)) return false;
 	var currentState = stateControl.getSectionState(section);
 	if (currentState == null) return false;
