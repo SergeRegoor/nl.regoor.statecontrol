@@ -162,11 +162,12 @@ function loadList(listTypeName, listTitle, masterParentId, parentId, containerOb
 	// Add button
 	if (listType.addButton != null) {
 		var addButtonObj = $('<button/>').applyLocalText(listType.addButton).attr('rel-masterparentid', masterParentId).attr('rel-parentid', parentId).attr('rel-formtype', listType.formType).click(function(){
-			var canAdd = true;
-			if (listType.onAdd != null)
-				canAdd = listType.onAdd($(this).attr('rel-parentid'));
-			if (canAdd)
-				$(this).showForm();
+            if (listType.onAdd != null) {
+                listType.onAdd($(this).attr('rel-parentid'), () => {
+                    $(this).showForm();
+                });
+            } else
+                $(this).showForm();
 		});
 		listParentObj.append(addButtonObj);
 	}

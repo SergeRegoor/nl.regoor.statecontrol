@@ -7,6 +7,8 @@ The goal of the app is to have a more structured method where multiple flows wil
 
 # Revision history
 
+2017-01-28 - v1.0.0 - Added confirm and alert dialogs for the Homey Desktop app.
+
 2016-11-24 - v0.2.5 - Bug fix for delayed flow triggers.
 
 2016-11-22 - v0.2.4 - Added API functions, fixed sorting of state overview.
