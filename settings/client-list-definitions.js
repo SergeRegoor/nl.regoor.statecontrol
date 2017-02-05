@@ -42,15 +42,14 @@ var _listTypes = [
 			if (nrOfFlowTriggers == 1) inUseMessage += ', ' + __('list.flowTriggers.inUse.one'); else if (nrOfFlowTriggers > 1) inUseMessage += ', ' + __('list.flowTriggers.inUse.multiple').replace('[quantity]', nrOfFlowTriggers);
 			if (nrOfFlowActions == 1) inUseMessage += ', ' + __('list.flowActions.inUse.one'); else if (nrOfFlowActions > 1) inUseMessage += ', ' + __('list.flowActions.inUse.multiple').replace('[quantity]', nrOfFlowActions);
 			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
-			if (inUseMessage.length > 2) {
-				alert(__('list.groups.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
-				return false;
-			}
-			if (!confirm(__('list.groups.confirmDelete').replace('[description]',group.description))) return false;
-			_settings.groups = $.grep(_settings.groups, function(item){ return item.id != group.id; });
-			saveSettings();
-			$('.tabControl').invalidateTabs();
-			return true;
+		    if (inUseMessage.length > 2)
+                alertDialog(__('list.groups.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
+            else
+                confirmDialog(__('list.groups.confirmDelete').replace('[description]', group.description), function () {
+                    _settings.groups = $.grep(_settings.groups, function (item) { return item.id != group.id; });
+                    saveSettings();
+                    $('.tabControl').invalidateTabs();
+		        });
 		}
 	},
 	{
@@ -68,12 +67,12 @@ var _listTypes = [
 		],
 		filter: { property:'groupId', compareTo:'parentId' },
 		formType: 'section',
-		deleteItem: function(masterParentId, parentId, section) {
-			if (!confirm(__('list.sections.confirmDelete').replace('[description]',section.description))) return false;
-			_settings.sections = $.grep(_settings.sections, function(item){ return item.id != section.id; });
-			saveSettings();
-			$('.tabControl').invalidateTabs();
-			return true;
+        deleteItem: function (masterParentId, parentId, section) {
+            confirmDialog(__('list.sections.confirmDelete').replace('[description]', section.description), function() {
+                _settings.sections = $.grep(_settings.sections, function (item) { return item.id != section.id; });
+                saveSettings();
+                $('.tabControl').invalidateTabs();
+            });
 		}
 	},
 	{
@@ -103,15 +102,14 @@ var _listTypes = [
 			var nrOfEvents = $.grep(_settings.events, function(x){ return (x.conditionStateId == state.id) || (x.setStateId == state.id); }).length;
 			if (nrOfSections == 1) inUseMessage += ', ' + __('list.sections.inUse.one'); else if (nrOfSections > 1) inUseMessage += ', ' + __('list.sections.inUse.multiple').replace('[quantity]', nrOfSections);
 			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
-			if (inUseMessage.length > 2) {
-				alert(__('list.states.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
-				return false;
-			}
-			if (!confirm(__('list.states.confirmDelete').replace('[description]',state.description))) return false;
-			_settings.states = $.grep(_settings.states, function(item){ return item.id != state.id; });
-			saveSettings();
-			$('.tabControl').invalidateTabs();
-			return true;
+			if (inUseMessage.length > 2)
+				alertDialog(__('list.states.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
+			else
+		        confirmDialog(__('list.states.confirmDelete').replace('[description]', state.description), function() {
+                    _settings.states = $.grep(_settings.states, function (item) { return item.id != state.id; });
+                    saveSettings();
+                    $('.tabControl').invalidateTabs();
+                });
 		}
 	},
 	{
@@ -132,15 +130,14 @@ var _listTypes = [
 			var inUseMessage = '';
 			var nrOfEvents = $.grep(_settings.events, function(x){ return x.executeFlowTriggerId == flowTrigger.id; }).length;
 			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
-			if (inUseMessage.length > 2) {
-				alert(__('list.flowTriggers.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
-				return false;
-			}
-			if (!confirm(__('list.flowTriggers.confirmDelete').replace('[description]',flowTrigger.description))) return false;
-			_settings.flowTriggers = $.grep(_settings.flowTriggers, function(item){ return item.id != flowTrigger.id; });
-			saveSettings();
-			$('.tabControl').invalidateTabs();
-			return true;
+			if (inUseMessage.length > 2)
+				alertDialog(__('list.flowTriggers.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
+			else
+                confirmDialog(__('list.flowTriggers.confirmDelete').replace('[description]', flowTrigger.description), function() {
+                    _settings.flowTriggers = $.grep(_settings.flowTriggers, function (item) { return item.id != flowTrigger.id; });
+                    saveSettings();
+                    $('.tabControl').invalidateTabs();
+                });
 		}
 	},
 	{
@@ -161,15 +158,14 @@ var _listTypes = [
 			var inUseMessage = '';
 			var nrOfEvents = $.grep(_settings.events, function(x){ return x.eventActionId == flowAction.id; }).length;
 			if (nrOfEvents == 1) inUseMessage += ', ' + __('list.events.inUse.one'); else if (nrOfEvents > 1) inUseMessage += ', ' + __('list.events.inUse.multiple').replace('[quantity]', nrOfEvents);
-			if (inUseMessage.length > 2) {
-				alert(__('list.flowActions.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
-				return false;
-			}
-			if (!confirm(__('list.flowActions.confirmDelete').replace('[description]',flowAction.description))) return false;
-			_settings.flowActions = $.grep(_settings.flowActions, function(item){ return item.id != flowAction.id; });
-			saveSettings();
-			$('.tabControl').invalidateTabs();
-			return true;
+			if (inUseMessage.length > 2)
+				alertDialog(__('list.flowActions.inUse.error') + ' (' + inUseMessage.substring(2) + ').');
+			else
+                confirmDialog(__('list.flowActions.confirmDelete').replace('[description]', flowAction.description), function() {
+                    _settings.flowActions = $.grep(_settings.flowActions, function (item) { return item.id != flowAction.id; });
+                    saveSettings();
+                    $('.tabControl').invalidateTabs();
+                });
 		}
 	},
 	{
@@ -209,21 +205,19 @@ var _listTypes = [
 		],
 		filter: { property:'groupId', compareTo:'parentId' },
 		formType: 'event',
-		onAdd: function(groupId) {
+		onAdd: function(groupId, addCallback) {
 			var nrOfFlowActions = $.grep(_settings.flowActions, function(x){ return x.groupId == groupId; }).length;
-			if (nrOfFlowActions == 0) {
-				alert(__('list.events.cannotAdd'));
-				return false;
-			}
-			return true;
+		    if (nrOfFlowActions == 0)
+		        alertDialog(__('list.events.cannotAdd'));
+		    else
+		        addCallback();
 		},
-		deleteItem: function(masterParentId, parentId, event) {
-			if (!confirm(__('list.events.confirmDelete').replace('[description]',event.description))) return false;
-			_settings.events = $.grep(_settings.events, function(item){ return item.id != event.id; });
-			saveSettings();
-			$('.tabControl').invalidateTabs();
-			return true;
-
+        deleteItem: function (masterParentId, parentId, event) {
+            confirmDialog(__('list.events.confirmDelete').replace('[description]', event.description), function() {
+                _settings.events = $.grep(_settings.events, function (item) { return item.id != event.id; });
+                saveSettings();
+                $('.tabControl').invalidateTabs();
+            });
 		}
 	}
 ];

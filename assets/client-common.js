@@ -100,3 +100,38 @@ $.fn.closePopup = function(){
 	popupBackground.remove();
 	$('body').css('overflow','auto');
 };
+
+function showDialog(message, buttons) {
+    var popupBackground = $('<div>').addClass('popupBackground').attr('id', 'DialogBackground').css('height', $('body').height());
+    popupBackground.css('z-index', 9998);
+    var popupContainer = $('<div>').addClass('popupContainer').attr('id', 'DialogPopup');
+    popupContainer.css('z-index', 9999);
+    popupContainer.css('top', '100px');
+    popupContainer.css('width', 'calc(400px - 40px)');
+    popupContainer.css('height', 'calc(140px - 40px)');
+    popupContainer.css('margin', '0 0 0 -200px');
+    $('body').append(popupBackground);
+    $('body').append(popupContainer);
+    $('body').css('overflow', 'hidden');
+
+    popupContainer.append($('<div/>').text(message).css('margin', '0 0 30px 0'));
+
+    $.each(buttons, function(idx, item) {
+        popupContainer.append($('<button/>').text(item.text).css({ 'float': 'right', 'margin': '0 '+(idx === 0 ? 0 : 20)+'px 0 0' }).click(function (e) {
+            e.preventDefault();
+            $('body').css('overflow', 'auto');
+            popupContainer.remove();
+            popupBackground.remove();
+            if (item.callback != null)
+                item.callback();
+        }));
+    });
+}
+
+function alertDialog(message, proceedCallback) {
+    showDialog(message, [{text:'OK', callback: proceedCallback}]);
+}
+
+function confirmDialog(message, yesCallback, noCallback) {
+    showDialog(message, [{ text: __('boolean.yes'), callback: yesCallback }, { text: __('boolean.no'), callback: noCallback }]);
+}
